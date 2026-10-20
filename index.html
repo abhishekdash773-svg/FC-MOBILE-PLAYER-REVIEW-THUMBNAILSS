@@ -4,343 +4,294 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FC Mobile Thumbnail Maker</title>
+<title>FC Mobile Player Review Maker</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&display=swap" rel="stylesheet">
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#10111a;color:#fff;font-family:Arial,sans-serif;padding:16px}
-h1{text-align:center;color:#f6ca55;font-size:25px}
-.sub{text-align:center;color:#bbb;font-size:13px;margin-bottom:20px}
-.panel{max-width:900px;margin:auto;background:#1b1d29;padding:16px;border-radius:14px}
-label{display:block;font-size:13px;color:#ddd;margin:13px 0 6px}
-input[type=text],input[type=number]{width:100%;padding:12px;border-radius:8px;border:1px solid #45485b;background:#10121b;color:white;font-size:15px}
-input[type=file]{width:100%;font-size:13px;margin:5px 0}
-input[type=color]{width:100%;height:40px;background:#10121b;border:0}
-input[type=range]{width:100%;accent-color:#f6ca55}
-button{padding:12px;border:0;border-radius:8px;background:#f6ca55;color:#171717;font-weight:bold;font-size:14px;cursor:pointer}
-button.secondary{background:#36394a;color:white}
-.buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
-.buttons button{flex:1;min-width:130px}
-.preview{max-width:900px;margin:16px auto;background:#202230;padding:8px;border-radius:12px}
-canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;border-radius:5px;touch-action:none;cursor:move}
-.note{font-size:12px;color:#bbb;line-height:1.6;margin-top:12px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:520px){body{padding:9px}.panel{padding:12px}.grid{grid-template-columns:1fr 1fr}h1{font-size:21px}}
+body{
+  margin:0;padding:16px;background:#101014;color:#fff;
+  font-family:Arial,sans-serif
+}
+h1{text-align:center;color:#e7bd62;font-size:23px}
+.subtitle{text-align:center;color:#bbb;font-size:13px}
+.wrap{max-width:850px;margin:18px auto}
+.preview{
+  padding:7px;background:#202020;border-radius:10px;
+}
+canvas{
+  width:100%;height:auto;display:block;aspect-ratio:16/9;
+  background:#171717;border-radius:4px
+}
+.panel{
+  margin-top:15px;padding:18px;background:#1b1b22;
+  border-radius:12px
+}
+label{display:block;margin:13px 0 7px;font-size:14px}
+input[type=text]{
+  width:100%;padding:12px;background:#101014;color:#fff;
+  border:1px solid #444;border-radius:7px;font-size:16px
+}
+input[type=file]{width:100%;font-size:13px}
+button{
+  width:100%;margin-top:18px;padding:14px;border:0;
+  border-radius:8px;background:#e7bd62;color:#16120a;
+  font-size:16px;font-weight:bold
+}
+.note{font-size:12px;line-height:1.6;color:#bbb}
 </style>
 </head>
 <body>
-<h1>⚽ FC MOBILE THUMBNAIL MAKER</h1>
-<p class="sub">Create your player review banner • 1280 × 720 • 16:9</p>
 
-<div class="preview">
-  <canvas id="canvas" width="1280" height="720"></canvas>
-</div>
+<h1>⚽ PLAYER REVIEW MAKER</h1>
+<p class="subtitle">FC MOBILE • BALLON D'OR EDITION</p>
 
-<div class="panel">
-  <label>1. Upload your background image</label>
-  <input id="bgFile" type="file" accept="image/*">
-
-  <label>2. Upload player card PNG (transparent PNG recommended)</label>
-  <input id="cardFile" type="file" accept="image/*">
-
-  <div class="grid">
-    <div>
-      <label>Player name</label>
-      <input id="player" type="text" value="MESSI">
-    </div>
-    <div>
-      <label>Creator name</label>
-      <input id="creator" type="text" value="YOUR NAME">
-    </div>
+<div class="wrap">
+  <div class="preview">
+    <canvas id="canvas" width="1280" height="720"></canvas>
   </div>
 
-  <label>Headline colour</label>
-  <input id="headlineColor" type="color" value="#ffffff">
+  <div class="panel">
+    <label for="player">Player Name</label>
+    <input id="player" type="text" value="ZIDANE" maxlength="28">
 
-  <label>Highlight player name</label>
-  <input id="highlightColor" type="color" value="#f6ca55">
+    <label for="creator">Your Name (BY:)</label>
+    <input id="creator" type="text" value="YOUR NAME" maxlength="35">
 
-  <label>Creator text colour</label>
-  <input id="byColor" type="color" value="#ffffff">
+    <label for="card">Upload Player Card (transparent PNG recommended)</label>
+    <input id="card" type="file" accept="image/png,image/webp,image/*">
 
-  <div class="grid">
-    <div>
-      <label>Headline font size</label>
-      <input id="headlineSize" type="range" min="28" max="100" value="66">
-    </div>
-    <div>
-      <label>Card size</label>
-      <input id="cardSize" type="range" min="20" max="65" value="42">
-    </div>
+    <button id="download">DOWNLOAD THUMBNAIL PNG</button>
+
+    <p class="note">
+      Fixed 16:9 layout • 1280 × 720 • No text or card boxes.
+      Background, font, layout and positions are fixed by the website owner.
+      Use a transparent PNG for the cleanest card result.
+    </p>
   </div>
-
-  <label>Creator text size</label>
-  <input id="bySize" type="range" min="18" max="60" value="35">
-
-  <div class="buttons">
-    <button id="download">⬇ Download PNG</button>
-    <button class="secondary" id="reset">Reset layout</button>
-  </div>
-
-  <p class="note">
-    <b>How to use:</b> Upload your background and transparent player card.
-    Drag the card or text directly on the preview to reposition it.
-    The headline stays on one line; its font automatically shrinks if needed.
-    No solid panel is drawn behind the card or text.
-  </p>
 </div>
 
 <script>
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
-const el = id => document.getElementById(id);
+const playerInput = document.getElementById("player");
+const creatorInput = document.getElementById("creator");
+const cardInput = document.getElementById("card");
 
-let bg = null;
-let card = null;
+let background = new Image();
+let backgroundReady = false;
+let playerCard = null;
 
-const layout = {
-  card: {x: 65, y: 75, w: 390, h: 570},
-  headline: {x: 490, y: 320},
-  by: {x: 495, y: 390}
+// The website owner controls the background filename here.
+// Replace background.jpg in the repository to change the design.
+background.onload = () => {
+  backgroundReady = true;
+  draw();
 };
+background.onerror = () => {
+  backgroundReady = false;
+  draw();
+};
+background.src = "background.jpg";
 
-let dragging = null;
-let lastPointer = null;
+// Fixed layout: visitors cannot move or resize these elements.
+const CARD = { x: 65, y: 85, w: 365, h: 550 };
+const HEADLINE = { x: 475, y: 310, maxWidth: 770 };
+const CREDIT = { x: 480, y: 385, maxWidth: 730 };
 
-function loadImage(file, callback) {
-  if (!file) return;
-  const url = URL.createObjectURL(file);
-  const img = new Image();
-  img.onload = () => {
-    callback(img);
-    URL.revokeObjectURL(url);
-    draw();
-  };
-  img.onerror = () => {
-    URL.revokeObjectURL(url);
-    alert('Image could not be loaded. Please try another image.');
-  };
-  img.src = url;
+function drawBackground() {
+  if (!backgroundReady) {
+    const g = ctx.createLinearGradient(0, 0, 1280, 720);
+    g.addColorStop(0, "#11111b");
+    g.addColorStop(0.5, "#302719");
+    g.addColorStop(1, "#09090e");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 1280, 720);
+
+    ctx.fillStyle = "#e7bd62";
+    ctx.font = "bold 32px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("UPLOAD background.jpg TO YOUR REPOSITORY", 640, 360);
+    return;
+  }
+
+  const scale = Math.max(
+    1280 / background.width,
+    720 / background.height
+  );
+  const w = background.width * scale;
+  const h = background.height * scale;
+
+  ctx.drawImage(
+    background,
+    (1280 - w) / 2,
+    (720 - h) / 2,
+    w,
+    h
+  );
 }
-
-el('bgFile').addEventListener('change', e => {
-  loadImage(e.target.files[0], img => bg = img);
-});
-
-el('cardFile').addEventListener('change', e => {
-  loadImage(e.target.files[0], img => {
-    card = img;
-    fitCard();
-  });
-});
 
 function fitCard() {
-  if (!card) return;
-  const maxW = 390;
-  const maxH = 570;
-  const ratio = Math.min(maxW / card.width, maxH / card.height);
-  layout.card.w = card.width * ratio;
-  layout.card.h = card.height * ratio;
-  layout.card.x = 65;
-  layout.card.y = (720 - layout.card.h) / 2;
+  if (!playerCard) return;
+
+  const scale = Math.min(
+    CARD.w / playerCard.width,
+    CARD.h / playerCard.height
+  );
+
+  const w = playerCard.width * scale;
+  const h = playerCard.height * scale;
+
+  // Center the uploaded card inside its fixed area.
+  ctx.drawImage(
+    playerCard,
+    CARD.x + (CARD.w - w) / 2,
+    CARD.y + (CARD.h - h) / 2,
+    w,
+    h
+  );
 }
 
-function drawCover(img) {
-  const scale = Math.max(canvas.width / img.width,
-                         canvas.height / img.height);
-  const w = img.width * scale;
-  const h = img.height * scale;
-  ctx.drawImage(img, (1280-w)/2, (720-h)/2, w, h);
-}
+function fitFont(text, maxWidth, initialSize, minSize) {
+  let size = initialSize;
 
-function drawFallback() {
-  const grad = ctx.createLinearGradient(0, 0, 1280, 720);
-  grad.addColorStop(0, '#101322');
-  grad.addColorStop(0.55, '#29233d');
-  grad.addColorStop(1, '#10111b');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, 1280, 720);
-
-  const glow = ctx.createRadialGradient(850, 360, 30, 850, 360, 550);
-  glow.addColorStop(0, 'rgba(246,202,85,.18)');
-  glow.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = glow;
-  ctx.fillRect(0, 0, 1280, 720);
-
-  ctx.strokeStyle = 'rgba(255,255,255,.07)';
-  ctx.lineWidth = 2;
-  for(let i=0;i<8;i++){
-    ctx.beginPath();
-    ctx.moveTo(550+i*100, 0);
-    ctx.lineTo(300+i*100, 720);
-    ctx.stroke();
+  while (size > minSize) {
+    ctx.font = `900 ${size}px Cinzel, Georgia, serif`;
+    if (ctx.measureText(text).width <= maxWidth) break;
+    size--;
   }
+
+  return size;
 }
 
 function drawHeadline() {
-  const name = el('player').value.trim() || 'PLAYER NAME';
-  const suffix = ' PLAYER REVIEW IS LIVE!';
-  const nameColor = el('highlightColor').value;
-  const restColor = el('headlineColor').value;
-  const requestedSize = Number(el('headlineSize').value);
-  const maxWidth = 1280 - layout.headline.x - 35;
+  const name = playerInput.value.trim() || "PLAYER";
+  const suffix = " PLAYER REVIEW IS LIVE!";
+  const fullText = name + suffix;
 
-  ctx.font = `900 ${requestedSize}px Arial Black, Arial, sans-serif`;
-  const totalWidth = ctx.measureText(name + suffix).width;
-  const size = Math.min(requestedSize,
-    requestedSize * maxWidth / Math.max(totalWidth, 1));
+  const size = fitFont(fullText, HEADLINE.maxWidth, 43, 12);
 
-  ctx.font = `900 ${size}px Arial Black, Arial, sans-serif`;
-  ctx.textBaseline = 'middle';
-  ctx.textAlign = 'left';
+  ctx.font = `900 ${size}px Cinzel, Georgia, serif`;
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
 
-  let x = layout.headline.x;
-  ctx.fillStyle = nameColor;
-  ctx.fillText(name, x, layout.headline.y);
-  x += ctx.measureText(name).width;
+  // Same font, size and weight across the entire headline.
+  const gradient = ctx.createLinearGradient(
+    HEADLINE.x, HEADLINE.y - size / 2,
+    HEADLINE.x, HEADLINE.y + size / 2
+  );
+  gradient.addColorStop(0, "#fff0b3");
+  gradient.addColorStop(0.35, "#e8c56f");
+  gradient.addColorStop(0.7, "#bd8732");
+  gradient.addColorStop(1, "#fff0b3");
 
-  ctx.fillStyle = restColor;
-  ctx.fillText(suffix, x, layout.headline.y);
+  ctx.fillStyle = gradient;
+  ctx.shadowColor = "rgba(0,0,0,0.85)";
+  ctx.shadowBlur = 8;
+  ctx.shadowOffsetX = 2;
+  ctx.shadowOffsetY = 3;
+
+  // A single line; font shrinks if the name is long.
+  ctx.fillText(fullText, HEADLINE.x, HEADLINE.y, HEADLINE.maxWidth);
+
+  ctx.shadowColor = "transparent";
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 0;
 }
 
-function drawBy() {
-  const text = 'BY: ' + (el('creator').value.trim() || 'YOUR NAME');
-  const size = Number(el('bySize').value);
-  ctx.font = `900 ${size}px Arial Black, Arial, sans-serif`;
-  ctx.textBaseline = 'middle';
-  ctx.textAlign = 'left';
-  ctx.fillStyle = el('byColor').value;
-  ctx.fillText(text, layout.by.x, layout.by.y);
+function drawCredit() {
+  const text = "BY: " + (creatorInput.value.trim() || "YOUR NAME");
+  const size = fitFont(text, CREDIT.maxWidth, 27, 12);
+
+  ctx.font = `900 ${size}px Cinzel, Georgia, serif`;
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+
+  const gradient = ctx.createLinearGradient(
+    CREDIT.x, CREDIT.y - size / 2,
+    CREDIT.x, CREDIT.y + size / 2
+  );
+  gradient.addColorStop(0, "#ffffff");
+  gradient.addColorStop(1, "#d6b56b");
+
+  ctx.fillStyle = gradient;
+  ctx.shadowColor = "rgba(0,0,0,0.9)";
+  ctx.shadowBlur = 6;
+  ctx.shadowOffsetY = 2;
+
+  ctx.fillText(text, CREDIT.x, CREDIT.y, CREDIT.maxWidth);
+
+  ctx.shadowColor = "transparent";
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
 }
 
 function draw() {
   ctx.clearRect(0, 0, 1280, 720);
+  drawBackground();
 
-  if (bg) drawCover(bg);
-  else drawFallback();
+  // No panel, rectangle or frame behind the card.
+  if (playerCard) fitCard();
 
-  // Draw the actual card image only. No card-shaped background or frame.
-  if (card) {
-    ctx.drawImage(card, layout.card.x, layout.card.y,
-                  layout.card.w, layout.card.h);
-  }
-
-  // All text is drawn directly over the background.
+  // Text is drawn directly on top of the background.
   drawHeadline();
-  drawBy();
+  drawCredit();
 }
 
-['player','creator','headlineColor','highlightColor','byColor',
- 'headlineSize','cardSize','bySize'].forEach(id => {
-  el(id).addEventListener('input', () => {
-    if (id === 'cardSize' && card) {
-      const pct = Number(el('cardSize').value) / 42;
-      const ratio = card.width / card.height;
-      layout.card.h = Math.min(650, 570 * pct);
-      layout.card.w = layout.card.h * ratio;
-      if (layout.card.w > 480) {
-        layout.card.w = 480;
-        layout.card.h = layout.card.w / ratio;
-      }
-    }
+playerInput.addEventListener("input", draw);
+creatorInput.addEventListener("input", draw);
+
+cardInput.addEventListener("change", event => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+
+  img.onload = () => {
+    playerCard = img;
     draw();
-  });
-});
-
-function pointerPosition(e) {
-  const r = canvas.getBoundingClientRect();
-  return {
-    x: (e.clientX - r.left) * 1280 / r.width,
-    y: (e.clientY - r.top) * 720 / r.height
+    URL.revokeObjectURL(url);
   };
-}
 
-function hitTest(p) {
-  if (card && p.x >= layout.card.x && p.x <= layout.card.x+layout.card.w
-      && p.y >= layout.card.y && p.y <= layout.card.y+layout.card.h) {
-    return 'card';
-  }
+  img.onerror = () => {
+    URL.revokeObjectURL(url);
+    alert("Image could not be loaded. Try another PNG.");
+  };
 
-  if (Math.abs(p.y-layout.headline.y) < 75 &&
-      p.x >= layout.headline.x && p.x <= 1270) {
-    return 'headline';
-  }
-
-  if (Math.abs(p.y-layout.by.y) < 45 &&
-      p.x >= layout.by.x && p.x <= 1270) {
-    return 'by';
-  }
-
-  return null;
-}
-
-canvas.addEventListener('pointerdown', e => {
-  const p = pointerPosition(e);
-  dragging = hitTest(p);
-  lastPointer = p;
-  if (dragging) canvas.setPointerCapture(e.pointerId);
+  img.src = url;
 });
 
-canvas.addEventListener('pointermove', e => {
-  if (!dragging || !lastPointer) return;
-  const p = pointerPosition(e);
-  const dx = p.x-lastPointer.x;
-  const dy = p.y-lastPointer.y;
-
-  if (dragging === 'card') {
-    layout.card.x = Math.max(0, Math.min(1280-layout.card.w,
-      layout.card.x+dx));
-    layout.card.y = Math.max(0, Math.min(720-layout.card.h,
-      layout.card.y+dy));
-  } else if (dragging === 'headline') {
-    layout.headline.x = Math.max(0, Math.min(950,
-      layout.headline.x+dx));
-    layout.headline.y = Math.max(40, Math.min(680,
-      layout.headline.y+dy));
-  } else if (dragging === 'by') {
-    layout.by.x = Math.max(0, Math.min(1100, layout.by.x+dx));
-    layout.by.y = Math.max(40, Math.min(680, layout.by.y+dy));
-  }
-
-  lastPointer = p;
+document.getElementById("download").addEventListener("click", async () => {
+  await document.fonts.ready;
   draw();
-});
 
-function stopDrag() {
-  dragging = null;
-  lastPointer = null;
-}
-canvas.addEventListener('pointerup', stopDrag);
-canvas.addEventListener('pointercancel', stopDrag);
-
-el('reset').addEventListener('click', () => {
-  layout.card = {x:65,y:75,w:390,h:570};
-  layout.headline = {x:490,y:320};
-  layout.by = {x:495,y:390};
-  el('headlineSize').value = 66;
-  el('cardSize').value = 42;
-  el('bySize').value = 35;
-  fitCard();
-  draw();
-});
-
-el('download').addEventListener('click', () => {
-  draw();
   canvas.toBlob(blob => {
     if (!blob) {
-      alert('Export failed. Please try again.');
+      alert("Could not export the thumbnail. Please try again.");
       return;
     }
+
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = (el('player').value.trim() || 'player')
-      .replace(/[^a-z0-9_-]/gi, '_') + '_review.png';
-    a.click();
+    const link = document.createElement("a");
+
+    const safeName = (playerInput.value.trim() || "PLAYER")
+      .replace(/[^a-z0-9_-]/gi, "_");
+
+    link.href = url;
+    link.download = safeName + "_PLAYER_REVIEW.png";
+    link.click();
+
     setTimeout(() => URL.revokeObjectURL(url), 1500);
-  }, 'image/png');
+  }, "image/png");
 });
 
+document.fonts.ready.then(draw);
 draw();
 </script>
 </body>
