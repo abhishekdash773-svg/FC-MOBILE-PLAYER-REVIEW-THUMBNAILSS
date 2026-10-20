@@ -147,12 +147,12 @@
 
     let cardImage = null;
 
-    // Full left slot dimensions (large frame area)
+    // Exact full slot dimensions on the left side of the background template
     const CARD_BOX = {
-      x: 10,
-      y: 200,
-      width: 380,
-      height: 480
+      x: 35,
+      y: 210,
+      width: 240,
+      height: 440
     };
 
     bgImage.onload = renderCanvas;
@@ -183,21 +183,9 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
 
-      // 3. Draw Card Art scaled big to fill the slot area proportionally
+      // 3. Draw Card Art filling the left frame slot completely
       if (cardImage) {
-        const scale = Math.min(
-          CARD_BOX.width / cardImage.width,
-          CARD_BOX.height / cardImage.height
-        );
-
-        const renderWidth = cardImage.width * scale;
-        const renderHeight = cardImage.height * scale;
-
-        // Position inside the full left area
-        const renderX = CARD_BOX.x + (CARD_BOX.width - renderWidth) / 2;
-        const renderY = CARD_BOX.y + (CARD_BOX.height - renderHeight) / 2;
-
-        ctx.drawImage(cardImage, renderX, renderY, renderWidth, renderHeight);
+        ctx.drawImage(cardImage, CARD_BOX.x, CARD_BOX.y, CARD_BOX.width, CARD_BOX.height);
       }
     }
 
