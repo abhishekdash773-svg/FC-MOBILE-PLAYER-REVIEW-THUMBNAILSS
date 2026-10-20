@@ -147,12 +147,12 @@
 
     let cardImage = null;
 
-    // Optimized larger slot dimensions for the left frame
-    const CARD_BOX = {
-      x: 20,
-      y: 175,
-      width: 280,
-      height: 510
+    // Designated slot area on the left of the background
+    const SLOT = {
+      x: 15,
+      y: 170,
+      width: 250,
+      height: 515
     };
 
     bgImage.onload = renderCanvas;
@@ -183,9 +183,22 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
 
-      // 3. Draw Card Art filling the larger left slot completely
+      // 3. Draw Card Art with correct aspect ratio and center alignment
       if (cardImage) {
-        ctx.drawImage(cardImage, CARD_BOX.x, CARD_BOX.y, CARD_BOX.width, CARD_BOX.height);
+        // Uniform scale to fit perfectly without squeezing
+        const scale = Math.min(
+          SLOT.width / cardImage.width,
+          SLOT.height / cardImage.height
+        );
+
+        const renderWidth = cardImage.width * scale;
+        const renderHeight = cardImage.height * scale;
+
+        // Perfectly center horizontally and vertically within the slot
+        const renderX = SLOT.x + (SLOT.width - renderWidth) / 2;
+        const renderY = SLOT.y + (SLOT.height - renderHeight) / 2;
+
+        ctx.drawImage(cardImage, renderX, renderY, renderWidth, renderHeight);
       }
     }
 
