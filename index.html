@@ -35,5 +35,383 @@
       margin-bottom: 20px;
       text-transform: uppercase;
       letter-spacing: 2px;
-      text-shadow: 0 0 10px rgba
+      text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+      font-size: 1.8rem;
+      text-align: center;
+    }
+
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 1200px;
+      width: 100%;
+      align-items: center;
+    }
+
+    @media (min-width: 900px) {
+      .main-container {
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: center;
+      }
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      border: 2px solid var(--gold-dark);
+      border-radius: 8px;
+      box-shadow: 0 0 25px rgba(212, 175, 55, 0.3);
+      overflow: hidden;
+      background: #000;
+      max-width: 100%;
+    }
+
+    canvas {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+
+    .controls-panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--gold-dark);
+      border-radius: 8px;
+      padding: 20px;
+      width: 100%;
+      max-width: 450px;
+      backdrop-filter: blur(10px);
+    }
+
+    .section-title {
+      color: var(--gold-light);
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--gold-dark);
+      padding-bottom: 5px;
+      text-transform: uppercase;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      color: #ccc;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"], input[type="number"], select {
+      width: 100%;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid #444;
+      border-radius: 4px;
+      color: #fff;
+      font-size: 0.9rem;
+    }
+
+    input[type="text"]:focus, input[type="number"]:focus, select:focus {
+      border-color: var(--gold-primary);
+      outline: none;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .file-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold-primary));
+      color: #000;
+      font-weight: bold;
+      text-align: center;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .file-btn:hover {
+      opacity: 0.9;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+
+    .slider-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .slider-group input[type="range"] {
+      flex: 1;
+      accent-color: var(--gold-primary);
+    }
+
+    .slider-group span {
+      width: 40px;
+      font-size: 0.85rem;
+      text-align: right;
+    }
+
+    .download-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #ffd700, #b8860b);
+      border: none;
+      border-radius: 4px;
+      color: #000;
+      font-size: 1rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 15px;
+      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+
+    .download-btn:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>FC Mobile Card Maker</h1>
+
+  <div class="main-container">
+    <div class="canvas-wrapper">
+      <canvas id="cardCanvas" width="1280" height="720"></canvas>
+    </div>
+
+    <div class="controls-panel">
+      <!-- Player Image Upload -->
+      <div class="form-group">
+        <div class="section-title">1. Player Cutout</div>
+        <label for="playerImgInput" class="file-btn">Choose Player PNG</label>
+        <input type="file" id="playerImgInput" accept="image/*">
+      </div>
+
+      <!-- Player Controls -->
+      <div class="form-group">
+        <label>Image Scale & Position</label>
+        <div class="slider-group">
+          <label>Scale</label>
+          <input type="range" id="scaleInput" min="0.2" max="2.5" step="0.05" value="1">
+          <span id="scaleVal">1.0</span>
+        </div>
+        <div class="slider-group" style="margin-top: 5px;">
+          <label>X-Pos</label>
+          <input type="range" id="posXInput" min="-300" max="500" value="100">
+          <span id="posXVal">100</span>
+        </div>
+        <div class="slider-group" style="margin-top: 5px;">
+          <label>Y-Pos</label>
+          <input type="range" id="posYInput" min="-300" max="500" value="100">
+          <span id="posYVal">100</span>
+        </div>
+      </div>
+
+      <!-- Player Details -->
+      <div class="section-title">2. Card Details</div>
+      <div class="grid-3 form-group">
+        <div>
+          <label for="ovrInput">OVR</label>
+          <input type="number" id="ovrInput" value="99" min="1" max="110">
+        </div>
+        <div>
+          <label for="posInput">Position</label>
+          <input type="text" id="posInput" value="ST" maxlength="4">
+        </div>
+        <div>
+          <label for="nameInput">Name</label>
+          <input type="text" id="nameInput" value="MESSI">
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="section-title">3. Stats</div>
+      <div class="grid-3 form-group">
+        <div>
+          <label for="stat1">PAC</label>
+          <input type="number" id="stat1" value="95">
+        </div>
+        <div>
+          <label for="stat2">SHO</label>
+          <input type="number" id="stat2" value="98">
+        </div>
+        <div>
+          <label for="stat3">PAS</label>
+          <input type="number" id="stat3" value="94">
+        </div>
+        <div>
+          <label for="stat4">DRI</label>
+          <input type="number" id="stat4" value="99">
+        </div>
+        <div>
+          <label for="stat5">DEF</label>
+          <input type="number" id="stat5" value="45">
+        </div>
+        <div>
+          <label for="stat6">PHY</label>
+          <input type="number" id="stat6" value="78">
+        </div>
+      </div>
+
+      <button class="download-btn" id="downloadBtn">Download Card</button>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('cardCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Images
+    const bgImage = new Image();
+    bgImage.src = 'background.jpg'; // Uses background.jpg from repository
+
+    let playerImage = null;
+
+    // Controls
+    const playerImgInput = document.getElementById('playerImgInput');
+    const scaleInput = document.getElementById('scaleInput');
+    const posXInput = document.getElementById('posXInput');
+    const posYInput = document.getElementById('posYInput');
+    const ovrInput = document.getElementById('ovrInput');
+    const posInput = document.getElementById('posInput');
+    const nameInput = document.getElementById('nameInput');
+
+    const statInputs = [
+      document.getElementById('stat1'),
+      document.getElementById('stat2'),
+      document.getElementById('stat3'),
+      document.getElementById('stat4'),
+      document.getElementById('stat5'),
+      document.getElementById('stat6')
+    ];
+
+    // Event Listeners
+    bgImage.onload = renderCanvas;
+
+    playerImgInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          playerImage = new Image();
+          playerImage.onload = renderCanvas;
+          playerImage.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Control listener bindings
+    [scaleInput, posXInput, posYInput, ovrInput, posInput, nameInput, ...statInputs].forEach(input => {
+      input.addEventListener('input', () => {
+        document.getElementById('scaleVal').innerText = scaleInput.value;
+        document.getElementById('posXVal').innerText = posXInput.value;
+        document.getElementById('posYVal').innerText = posYInput.value;
+        renderCanvas();
+      });
+    });
+
+    function renderCanvas() {
+      // 1. Draw Background Image
+      if (bgImage.complete && bgImage.naturalWidth !== 0) {
+        ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+      } else {
+        ctx.fillStyle = '#0a0a0c';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      // Card boundary box dimensions (left section reserved for card art)
+      const cardX = 40;
+      const cardY = 220;
+      const cardW = 180;
+      const cardH = 260;
+
+      // 2. Render Player Cutout inside Card Frame Area
+      if (playerImage) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(cardX, cardY, cardW, cardH);
+        ctx.clip();
+
+        const scale = parseFloat(scaleInput.value);
+        const offsetX = parseInt(posXInput.value);
+        const offsetY = parseInt(posYInput.value);
+
+        const imgW = playerImage.width * scale;
+        const imgH = playerImage.height * scale;
+
+        ctx.drawImage(playerImage, cardX + offsetX, cardY + offsetY, imgW, imgH);
+        ctx.restore();
+      }
+
+      // 3. Render Card Info
+      ctx.save();
       
+      // OVR Text
+      ctx.fillStyle = '#f3e5ab';
+      ctx.font = 'bold 36px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(ovrInput.value, cardX + 15, cardY + 45);
+
+      // Position Text
+      ctx.font = 'bold 18px sans-serif';
+      ctx.fillStyle = '#d4af37';
+      ctx.fillText(posInput.value.toUpperCase(), cardX + 15, cardY + 68);
+
+      // Name Text
+      ctx.font = 'bold 20px sans-serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.fillText(nameInput.value.toUpperCase(), cardX + (cardW / 2), cardY + cardH - 35);
+
+      // 4. Render Stats on Card
+      const labels = ['PAC', 'SHO', 'PAS', 'DRI', 'DEF', 'PHY'];
+      ctx.font = '11px sans-serif';
+      ctx.fillStyle = '#d4af37';
+
+      labels.forEach((label, idx) => {
+        const val = statInputs[idx].value;
+        const col = idx % 2;
+        const row = Math.floor(idx / 2);
+
+        const xPos = cardX + 25 + (col * 75);
+        const yPos = cardY + cardH - 18 + (row * 0); // Displayed neatly at bottom
+
+        ctx.fillText(`${label} ${val}`, xPos, yPos);
+      });
+
+      ctx.restore();
+    }
+
+    // Initial draw call
+    renderCanvas();
+
+    // Export handler
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'card-design.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  </script>
+</body>
+</html>
