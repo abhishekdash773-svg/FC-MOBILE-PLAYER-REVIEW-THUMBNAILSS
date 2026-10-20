@@ -33,9 +33,17 @@
       display: flex;
       flex-direction: column;
       gap: 20px;
-      max-width: 1280px;
+      max-width: 1300px;
       width: 100%;
       align-items: center;
+    }
+
+    @media (min-width: 1024px) {
+      .main-container {
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: center;
+      }
     }
 
     .canvas-container {
@@ -46,7 +54,7 @@
       overflow: hidden;
       background: #000;
       width: 100%;
-      max-width: 1000px;
+      max-width: 850px;
     }
 
     canvas {
@@ -62,11 +70,12 @@
       border-radius: 8px;
       padding: 20px;
       width: 100%;
-      max-width: 450px;
+      max-width: 360px;
       backdrop-filter: blur(12px);
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
     }
 
     input[type="file"] {
@@ -118,11 +127,12 @@
     </div>
 
     <div class="controls-panel">
-      <!-- Upload Card Art -->
-      <label for="cardImgInput" class="file-btn">Upload Card Art (PNG)</label>
-      <input type="file" id="cardImgInput" accept="image/*">
+      <!-- Card Art Upload -->
+      <div class="form-group">
+        <label for="cardImgInput" class="file-btn">Upload Card Art (PNG)</label>
+        <input type="file" id="cardImgInput" accept="image/*">
+      </div>
 
-      <!-- Download Button -->
       <button class="download-btn" id="downloadBtn">Download Thumbnail</button>
     </div>
   </div>
@@ -131,26 +141,22 @@
     const canvas = document.getElementById('thumbCanvas');
     const ctx = canvas.getContext('2d');
 
-    // Fixed card position and dimensions matching the original spot
-    const CARD_POS = {
-      x: 27,       // Left position
-      y: 345,      // Top position
-      width: 228,  // Card width
-      height: 350  // Card height
-    };
-
-    // Load background image from repo
+    // Locked Background from repo
     const bgImage = new Image();
     bgImage.src = 'background.jpg';
 
     let cardImage = null;
 
-    const cardImgInput = document.getElementById('cardImgInput');
+    // Locked Card Art Coordinates & Dimensions matching original left frame slot
+    const CARD_X = 26;
+    const CARD_Y = 247;
+    const CARD_WIDTH = 200;
+    const CARD_HEIGHT = 242;
 
     bgImage.onload = renderCanvas;
 
-    // Handle Card PNG Upload
-    cardImgInput.addEventListener('change', (e) => {
+    // Custom Card Art upload handler
+    document.getElementById('cardImgInput').addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
@@ -167,7 +173,7 @@
       // 1. Clear Canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // 2. Draw Background
+      // 2. Draw Locked Background Image
       if (bgImage.complete && bgImage.naturalWidth !== 0) {
         ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
       } else {
@@ -175,21 +181,15 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
 
-      // 3. Draw Card Art locked strictly at fixed location
+      // 3. Draw Card Art Image strictly in locked original position
       if (cardImage) {
-        ctx.drawImage(
-          cardImage,
-          CARD_POS.x,
-          CARD_POS.y,
-          CARD_POS.width,
-          CARD_POS.height
-        );
+        ctx.drawImage(cardImage, CARD_X, CARD_Y, CARD_WIDTH, CARD_HEIGHT);
       }
     }
 
     renderCanvas();
 
-    // Export Thumbnail
+    // Download handler
     document.getElementById('downloadBtn').addEventListener('click', () => {
       const link = document.createElement('a');
       link.download = 'thumbnail.png';
