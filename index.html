@@ -147,10 +147,13 @@
 
     let cardImage = null;
 
-    // Fixed placement slot on the background frame
-    const TARGET_HEIGHT = 265; // Fixed height fitting the left card slot
-    const CARD_X_CENTER = 126; // Center horizontal position for the left card slot
-    const CARD_Y_BOTTOM = 490; // Bottom alignment point inside the left card slot
+    // Original position and size settings for the card
+    const CARD_BOX = {
+      x: 25,
+      y: 340,
+      width: 320,
+      height: 340
+    };
 
     bgImage.onload = renderCanvas;
 
@@ -180,15 +183,19 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
 
-      // 3. Draw Card Art Image maintaining natural aspect ratio
+      // 3. Draw Card Art Image scaled proportionally to fit the card area
       if (cardImage) {
-        const aspectRatio = cardImage.width / cardImage.height;
-        const renderHeight = TARGET_HEIGHT;
-        const renderWidth = TARGET_HEIGHT * aspectRatio;
+        const scale = Math.min(
+          CARD_BOX.width / cardImage.width,
+          CARD_BOX.height / cardImage.height
+        );
 
-        // Keep card centered horizontally and aligned at the bottom slot
-        const renderX = CARD_X_CENTER - (renderWidth / 2);
-        const renderY = CARD_Y_BOTTOM - renderHeight;
+        const renderWidth = cardImage.width * scale;
+        const renderHeight = cardImage.height * scale;
+
+        // Position at the bottom-center of the left card area
+        const renderX = CARD_BOX.x + (CARD_BOX.width - renderWidth) / 2;
+        const renderY = CARD_BOX.y + (CARD_BOX.height - renderHeight);
 
         ctx.drawImage(cardImage, renderX, renderY, renderWidth, renderHeight);
       }
