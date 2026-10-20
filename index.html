@@ -147,11 +147,10 @@
 
     let cardImage = null;
 
-    // Locked Card Art Coordinates & Dimensions matching original left frame slot
-    const CARD_X = 26;
-    const CARD_Y = 247;
-    const CARD_WIDTH = 200;
-    const CARD_HEIGHT = 242;
+    // Fixed placement slot on the background frame
+    const TARGET_HEIGHT = 265; // Fixed height fitting the left card slot
+    const CARD_X_CENTER = 126; // Center horizontal position for the left card slot
+    const CARD_Y_BOTTOM = 490; // Bottom alignment point inside the left card slot
 
     bgImage.onload = renderCanvas;
 
@@ -181,9 +180,17 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
 
-      // 3. Draw Card Art Image strictly in locked original position
+      // 3. Draw Card Art Image maintaining natural aspect ratio
       if (cardImage) {
-        ctx.drawImage(cardImage, CARD_X, CARD_Y, CARD_WIDTH, CARD_HEIGHT);
+        const aspectRatio = cardImage.width / cardImage.height;
+        const renderHeight = TARGET_HEIGHT;
+        const renderWidth = TARGET_HEIGHT * aspectRatio;
+
+        // Keep card centered horizontally and aligned at the bottom slot
+        const renderX = CARD_X_CENTER - (renderWidth / 2);
+        const renderY = CARD_Y_BOTTOM - renderHeight;
+
+        ctx.drawImage(cardImage, renderX, renderY, renderWidth, renderHeight);
       }
     }
 
