@@ -3,277 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Anniversary Event Banner Maker</title>
+  <title>FC Mobile Ballon d'Or Card Generator</title>
   <style>
+    :root {
+      --gold-primary: #d4af37;
+      --gold-light: #f3e5ab;
+      --gold-dark: #aa7c11;
+      --bg-dark: #0a0a0c;
+      --panel-bg: rgba(18, 18, 22, 0.85);
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     body {
-      background-color: #0d1117;
-      color: #ffffff;
+      background-color: var(--bg-dark);
+      color: #fff;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
       min-height: 100vh;
       padding: 20px;
     }
 
-    .container {
-      width: 100%;
-      max-width: 480px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .preview-card {
-      width: 100%;
-      background: #161b22;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-    }
-
-    canvas {
-      width: 100%;
-      height: auto;
-      display: block;
-      border-radius: 16px;
-    }
-
-    .form-card {
-      background-color: #161f2e;
-      border: 1px solid #212e40;
-      border-radius: 16px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .input-group label {
-      font-size: 14px;
-      color: #919eab;
-      font-weight: 500;
-    }
-
-    .input-group input[type="text"] {
-      width: 100%;
-      padding: 12px 14px;
-      background-color: #0b111a;
-      border: 1px solid #233043;
-      border-radius: 8px;
-      color: #ffffff;
-      font-size: 15px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .input-group input[type="text"]:focus {
-      border-color: #3b82f6;
-    }
-
-    .file-input-wrapper {
-      background-color: #0b111a;
-      border: 1px solid #233043;
-      border-radius: 8px;
-      padding: 10px;
-      display: flex;
-      align-items: center;
-    }
-
-    .file-input-wrapper input[type="file"] {
-      color: #919eab;
-      font-size: 14px;
-    }
-
-    .download-btn {
-      width: 100%;
-      padding: 14px;
-      background-color: #2563eb;
-      color: #ffffff;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.2s;
-      margin-top: 8px;
-    }
-
-    .download-btn:hover {
-      background-color: #1d4ed8;
-    }
-
-    .download-btn:active {
-      transform: scale(0.98);
-    }
-  </style>
-</head>
-<body>
-
-  <div class="container">
-    <!-- Live Canvas Preview -->
-    <div class="preview-card">
-      <canvas id="bannerCanvas" width="1280" height="720"></canvas>
-    </div>
-
-    <!-- User Controls -->
-    <div class="form-card">
-      <div class="input-group">
-        <label for="playerName">Player Name:</label>
-        <input type="text" id="playerName" value="LAYUN" placeholder="Enter Player Name">
-      </div>
-
-      <div class="input-group">
-        <label for="playerStats">Info / Stats:</label>
-        <input type="text" id="playerStats" value="120 | RB | MADHAV" placeholder="Enter Info / Stats">
-      </div>
-
-      <div class="input-group">
-        <label for="cardUpload">Player Card Image:</label>
-        <div class="file-input-wrapper">
-          <input type="file" id="cardUpload" accept="image/*">
-        </div>
-      </div>
-
-      <button class="download-btn" id="downloadBtn">Download Banner</button>
-    </div>
-  </div>
-
-  <script>
-    const canvas = document.getElementById('bannerCanvas');
-    const ctx = canvas.getContext('2d');
-
-    const playerNameInput = document.getElementById('playerName');
-    const playerStatsInput = document.getElementById('playerStats');
-    const cardUploadInput = document.getElementById('cardUpload');
-    const downloadBtn = document.getElementById('downloadBtn');
-
-    // Default/Locked Background Image (Loads background.jpg from repo)
-    const bgImage = new Image();
-    bgImage.src = 'background.jpg';
-
-    // Player Card Image State
-    let cardImage = null;
-
-    function drawCanvas() {
-      // Clear canvas
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // 1. Draw Background Image
-      if (bgImage.complete && bgImage.naturalWidth !== 0) {
-        ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
-      } else {
-        const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-        grad.addColorStop(0, '#5011dd');
-        grad.addColorStop(1, '#8100e6');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      }
-
-      // 2. Draw Uploaded Player Card (Proportional scaling, no squeezing)
-      let cardRightX = 60; 
-
-      if (cardImage) {
-        const targetHeight = 440; // Increased height
-        const aspectRatio = cardImage.naturalWidth / cardImage.naturalHeight;
-        const targetWidth = targetHeight * aspectRatio;
-        const cardX = 50;
-        const cardY = 220; // Lower placement
-
-        ctx.drawImage(cardImage, cardX, cardY, targetWidth, targetHeight);
-        cardRightX = cardX + targetWidth + 30; // Position text right after card
-      } else {
-        cardRightX = 80;
-      }
-
-      // 3. Draw Player Name Text (Larger & Bolder)
-      const textStartY = 450;
-      const nameText = playerNameInput.value.toUpperCase();
-
-      ctx.save();
-      ctx.font = '900 72px "Arial Black", Arial, sans-serif';
-      ctx.fillStyle = '#ffffff';
-      ctx.textAlign = 'left';
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
-      ctx.shadowBlur = 12;
-      ctx.shadowOffsetX = 3;
-      ctx.shadowOffsetY = 5;
+    h1 {
+      color: var(--gold-primary);
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba
       
-      ctx.fillText(nameText, cardRightX, textStartY);
-      ctx.restore();
-
-      // 4. Draw Stats Green Badge Container
-      const statsText = playerStatsInput.value.toUpperCase();
-      if (statsText.trim() !== '') {
-        ctx.save();
-        ctx.font = '700 28px sans-serif';
-        const textMetrics = ctx.measureText(statsText);
-        
-        const paddingX = 24;
-        const badgeWidth = textMetrics.width + paddingX;
-        const badgeHeight = 50;
-        const badgeX = cardRightX;
-        const badgeY = textStartY + 20;
-        const radius = 8;
-
-        // Draw green badge container
-        ctx.fillStyle = '#064e3b';
-        ctx.strokeStyle = '#10b981';
-        ctx.lineWidth = 2;
-
-        ctx.beginPath();
-        ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, radius);
-        ctx.fill();
-        ctx.stroke();
-
-        // Draw Stats Text
-        ctx.fillStyle = '#ffffff';
-        ctx.textAlign = 'left';
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-        ctx.shadowBlur = 4;
-        ctx.fillText(statsText, badgeX + (paddingX / 2), badgeY + 35);
-        ctx.restore();
-      }
-    }
-
-    // Event Listeners
-    bgImage.onload = drawCanvas;
-    playerNameInput.addEventListener('input', drawCanvas);
-    playerStatsInput.addEventListener('input', drawCanvas);
-
-    cardUploadInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          cardImage = new Image();
-          cardImage.onload = drawCanvas;
-          cardImage.src = event.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    downloadBtn.addEventListener('click', () => {
-      const link = document.createElement('a');
-      link.download = `${playerNameInput.value.trim() || 'banner'}_review.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    });
-
-    drawCanvas();
-  </script>
-</body>
-</html>
