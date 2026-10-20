@@ -30,7 +30,6 @@
       gap: 20px;
     }
 
-    /* Preview Canvas Wrapper */
     .preview-card {
       width: 100%;
       background: #161b22;
@@ -46,7 +45,6 @@
       border-radius: 16px;
     }
 
-    /* Form Container */
     .form-card {
       background-color: #161f2e;
       border: 1px solid #212e40;
@@ -125,7 +123,7 @@
 <body>
 
   <div class="container">
-    <!-- Live Preview Banner -->
+    <!-- Live Canvas Preview -->
     <div class="preview-card">
       <canvas id="bannerCanvas" width="1280" height="720"></canvas>
     </div>
@@ -162,14 +160,13 @@
     const cardUploadInput = document.getElementById('cardUpload');
     const downloadBtn = document.getElementById('downloadBtn');
 
-    // Default/Locked Background Image (Loads background.jpg from your repo)
+    // Default/Locked Background Image (Loads background.jpg from repo)
     const bgImage = new Image();
     bgImage.src = 'background.jpg';
 
     // Player Card Image State
     let cardImage = null;
 
-    // Redraw Canvas function matching Image 2 Layout
     function drawCanvas() {
       // Clear canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -178,75 +175,84 @@
       if (bgImage.complete && bgImage.naturalWidth !== 0) {
         ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
       } else {
-        // Fallback gradient if background.jpg is missing/loading
         const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-        grad.addColorStop(0, '#4a00e0');
-        grad.addColorStop(1, '#8e2de2');
+        grad.addColorStop(0, '#5011dd');
+        grad.addColorStop(1, '#8100e6');
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
 
-      // 2. Draw Uploaded Player Card (Left Side)
+      // 2. Draw Uploaded Player Card (Proportional scaling, no squeezing)
+      let cardRightX = 60; 
+
       if (cardImage) {
-        const cardWidth = 240;
-        const cardHeight = 320;
-        const cardX = 25;
-        const cardY = 330;
-        ctx.drawImage(cardImage, cardX, cardY, cardWidth, cardHeight);
+        const targetHeight = 440; // Increased height
+        const aspectRatio = cardImage.naturalWidth / cardImage.naturalHeight;
+        const targetWidth = targetHeight * aspectRatio;
+        const cardX = 50;
+        const cardY = 220; // Lower placement
+
+        ctx.drawImage(cardImage, cardX, cardY, targetWidth, targetHeight);
+        cardRightX = cardX + targetWidth + 30; // Position text right after card
+      } else {
+        cardRightX = 80;
       }
 
-      // 3. Draw Player Text Elements
-      const textStartX = cardImage ? 280 : 250;
-      const textStartY = 480;
-
-      // Player Name
+      // 3. Draw Player Name Text (Larger & Bolder)
+      const textStartY = 450;
       const nameText = playerNameInput.value.toUpperCase();
-      ctx.font = '900 48px sans-serif';
+
+      ctx.save();
+      ctx.font = '900 72px "Arial Black", Arial, sans-serif';
       ctx.fillStyle = '#ffffff';
       ctx.textAlign = 'left';
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-      ctx.shadowBlur = 10;
-      ctx.shadowOffsetX = 2;
-      ctx.shadowOffsetY = 4;
-      ctx.fillText(nameText, textStartX, textStartY);
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+      ctx.shadowBlur = 12;
+      ctx.shadowOffsetX = 3;
+      ctx.shadowOffsetY = 5;
+      
+      ctx.fillText(nameText, cardRightX, textStartY);
+      ctx.restore();
 
-      // Reset Shadow for Badge
-      ctx.shadowColor = 'transparent';
-
-      // Stats Green Badge Background
+      // 4. Draw Stats Green Badge Container
       const statsText = playerStatsInput.value.toUpperCase();
       if (statsText.trim() !== '') {
-        ctx.font = '600 22px sans-serif';
+        ctx.save();
+        ctx.font = '700 28px sans-serif';
         const textMetrics = ctx.measureText(statsText);
-        const badgeWidth = textMetrics.width + 24;
-        const badgeHeight = 36;
-        const badgeX = textStartX;
-        const badgeY = textStartY + 16;
-        const radius = 6;
+        
+        const paddingX = 24;
+        const badgeWidth = textMetrics.width + paddingX;
+        const badgeHeight = 50;
+        const badgeX = cardRightX;
+        const badgeY = textStartY + 20;
+        const radius = 8;
 
-        // Draw rounded badge container
-        ctx.fillStyle = 'rgba(10, 80, 60, 0.85)';
-        ctx.strokeStyle = '#00ffaa';
-        ctx.lineWidth = 1.5;
+        // Draw green badge container
+        ctx.fillStyle = '#064e3b';
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 2;
 
         ctx.beginPath();
         ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, radius);
         ctx.fill();
         ctx.stroke();
 
-        // Stats Text Inside Badge
+        // Draw Stats Text
         ctx.fillStyle = '#ffffff';
-        ctx.textAlign = 'center';
-        ctx.fillText(statsText, badgeX + (badgeWidth / 2), badgeY + 26);
+        ctx.textAlign = 'left';
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        ctx.shadowBlur = 4;
+        ctx.fillText(statsText, badgeX + (paddingX / 2), badgeY + 35);
+        ctx.restore();
       }
     }
 
-    // Event Listeners for Live Preview
+    // Event Listeners
     bgImage.onload = drawCanvas;
     playerNameInput.addEventListener('input', drawCanvas);
     playerStatsInput.addEventListener('input', drawCanvas);
 
-    // Handle Player Card Image Upload
     cardUploadInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file) {
@@ -260,7 +266,6 @@
       }
     });
 
-    // Handle High-Res Download
     downloadBtn.addEventListener('click', () => {
       const link = document.createElement('a');
       link.download = `${playerNameInput.value.trim() || 'banner'}_review.png`;
@@ -268,7 +273,6 @@
       link.click();
     });
 
-    // Initial render call
     drawCanvas();
   </script>
 </body>
