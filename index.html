@@ -3,266 +3,344 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FC Mobile Review Maker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FC Mobile Thumbnail Maker</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;padding:15px;background:#090b18;color:#fff;font-family:Arial,sans-serif}
-main{max-width:850px;margin:auto}
-h1{text-align:center;color:#c99aff;font-size:25px}
-p{color:#b8bdd9;font-size:14px;line-height:1.5}
-.panel{background:#171b30;padding:15px;border-radius:13px;margin:14px 0}
-label{display:block;font-size:14px;margin:13px 0 6px}
-input,select{width:100%;padding:11px;border-radius:7px;border:1px solid #454b6c;background:#0c1021;color:white;font-size:15px}
-button{padding:12px;border:0;border-radius:8px;background:#853dff;color:white;font-weight:bold;cursor:pointer}
-.buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-.buttons button{width:100%}
-canvas{width:100%;height:auto;display:block;border:1px solid #454b70;border-radius:8px;touch-action:none;background:#111}
-.small{font-size:12px;color:#aeb5d4}
+body{margin:0;background:#10111a;color:#fff;font-family:Arial,sans-serif;padding:16px}
+h1{text-align:center;color:#f6ca55;font-size:25px}
+.sub{text-align:center;color:#bbb;font-size:13px;margin-bottom:20px}
+.panel{max-width:900px;margin:auto;background:#1b1d29;padding:16px;border-radius:14px}
+label{display:block;font-size:13px;color:#ddd;margin:13px 0 6px}
+input[type=text],input[type=number]{width:100%;padding:12px;border-radius:8px;border:1px solid #45485b;background:#10121b;color:white;font-size:15px}
+input[type=file]{width:100%;font-size:13px;margin:5px 0}
+input[type=color]{width:100%;height:40px;background:#10121b;border:0}
+input[type=range]{width:100%;accent-color:#f6ca55}
+button{padding:12px;border:0;border-radius:8px;background:#f6ca55;color:#171717;font-weight:bold;font-size:14px;cursor:pointer}
+button.secondary{background:#36394a;color:white}
+.buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.buttons button{flex:1;min-width:130px}
+.preview{max-width:900px;margin:16px auto;background:#202230;padding:8px;border-radius:12px}
+canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;border-radius:5px;touch-action:none;cursor:move}
+.note{font-size:12px;color:#bbb;line-height:1.6;margin-top:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:520px){body{padding:9px}.panel{padding:12px}.grid{grid-template-columns:1fr 1fr}h1{font-size:21px}}
 </style>
 </head>
 <body>
-<main>
-<h1>⚽ FC MOBILE REVIEW MAKER</h1>
-<p>Upload your own background, add player card art, position your text and download your thumbnail.</p>
+<h1>⚽ FC MOBILE THUMBNAIL MAKER</h1>
+<p class="sub">Create your player review banner • 1280 × 720 • 16:9</p>
 
-<div class="panel">
-<label>1. Upload Background Image</label>
-<input id="bgFile" type="file" accept="image/*">
-
-<label>2. Upload Player Card Art (PNG recommended)</label>
-<input id="cardFile" type="file" accept="image/*" multiple>
-
-<div class="buttons">
-<button id="addText">＋ Add Text</button>
-<button id="delete">✕ Remove Selected</button>
-</div>
-
-<label>Edit Selected Text</label>
-<input id="textValue" placeholder="Select a text item first">
-
-<label>Text Colour</label>
-<input id="textColor" type="color" value="#ffffff">
-
-<label>Font Size</label>
-<input id="fontSize" type="range" min="14" max="100" value="48">
-
-<p class="small">Drag an element to move it. Drag its bottom-right handle to resize it. Transparent PNG artwork is recommended for clean results.</p>
+<div class="preview">
+  <canvas id="canvas" width="1280" height="720"></canvas>
 </div>
 
 <div class="panel">
-<label>Thumbnail Preview (16:9)</label>
-<canvas id="canvas" width="1280" height="720"></canvas>
-<div class="buttons">
-<button id="download">⬇ Download PNG</button>
-<button id="clearBg">Clear Background</button>
+  <label>1. Upload your background image</label>
+  <input id="bgFile" type="file" accept="image/*">
+
+  <label>2. Upload player card PNG (transparent PNG recommended)</label>
+  <input id="cardFile" type="file" accept="image/*">
+
+  <div class="grid">
+    <div>
+      <label>Player name</label>
+      <input id="player" type="text" value="MESSI">
+    </div>
+    <div>
+      <label>Creator name</label>
+      <input id="creator" type="text" value="YOUR NAME">
+    </div>
+  </div>
+
+  <label>Headline colour</label>
+  <input id="headlineColor" type="color" value="#ffffff">
+
+  <label>Highlight player name</label>
+  <input id="highlightColor" type="color" value="#f6ca55">
+
+  <label>Creator text colour</label>
+  <input id="byColor" type="color" value="#ffffff">
+
+  <div class="grid">
+    <div>
+      <label>Headline font size</label>
+      <input id="headlineSize" type="range" min="28" max="100" value="66">
+    </div>
+    <div>
+      <label>Card size</label>
+      <input id="cardSize" type="range" min="20" max="65" value="42">
+    </div>
+  </div>
+
+  <label>Creator text size</label>
+  <input id="bySize" type="range" min="18" max="60" value="35">
+
+  <div class="buttons">
+    <button id="download">⬇ Download PNG</button>
+    <button class="secondary" id="reset">Reset layout</button>
+  </div>
+
+  <p class="note">
+    <b>How to use:</b> Upload your background and transparent player card.
+    Drag the card or text directly on the preview to reposition it.
+    The headline stays on one line; its font automatically shrinks if needed.
+    No solid panel is drawn behind the card or text.
+  </p>
 </div>
-<p class="small">Export size: 1280 × 720 pixels. Selection outlines won't appear in the downloaded image.</p>
-</div>
-</main>
 
 <script>
-const canvas=document.getElementById('canvas');
-const ctx=canvas.getContext('2d');
-const $=id=>document.getElementById(id);
-let background=null;
-let items=[];
-let selected=null;
-let dragging=false;
-let resizing=false;
-let start=null;
-let uid=0;
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
 
-function loadImage(file,callback){
- const reader=new FileReader();
- reader.onload=()=>{
-  const img=new Image();
-  img.onload=()=>callback(img);
-  img.src=reader.result;
- };
- reader.readAsDataURL(file);
+const el = id => document.getElementById(id);
+
+let bg = null;
+let card = null;
+
+const layout = {
+  card: {x: 65, y: 75, w: 390, h: 570},
+  headline: {x: 490, y: 320},
+  by: {x: 495, y: 390}
+};
+
+let dragging = null;
+let lastPointer = null;
+
+function loadImage(file, callback) {
+  if (!file) return;
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = () => {
+    callback(img);
+    URL.revokeObjectURL(url);
+    draw();
+  };
+  img.onerror = () => {
+    URL.revokeObjectURL(url);
+    alert('Image could not be loaded. Please try another image.');
+  };
+  img.src = url;
 }
 
-function addText(text,x,y,size=48){
- const item={
-  id:++uid,type:'text',text,x,y,w:600,h:size*1.35,
-  size,color:'#ffffff',font:'Arial',bold:true
- };
- items.push(item);
- selectItem(item);
- draw();
+el('bgFile').addEventListener('change', e => {
+  loadImage(e.target.files[0], img => bg = img);
+});
+
+el('cardFile').addEventListener('change', e => {
+  loadImage(e.target.files[0], img => {
+    card = img;
+    fitCard();
+  });
+});
+
+function fitCard() {
+  if (!card) return;
+  const maxW = 390;
+  const maxH = 570;
+  const ratio = Math.min(maxW / card.width, maxH / card.height);
+  layout.card.w = card.width * ratio;
+  layout.card.h = card.height * ratio;
+  layout.card.x = 65;
+  layout.card.y = (720 - layout.card.h) / 2;
 }
 
-function addImage(img){
- const maxW=420,maxH=540;
- const scale=Math.min(maxW/img.width,maxH/img.height,1);
- const item={
-  id:++uid,type:'image',img,
-  x:canvas.width*.35,y:canvas.height*.15,
-  w:img.width*scale,h:img.height*scale
- };
- items.push(item);
- selectItem(item);
- draw();
+function drawCover(img) {
+  const scale = Math.max(canvas.width / img.width,
+                         canvas.height / img.height);
+  const w = img.width * scale;
+  const h = img.height * scale;
+  ctx.drawImage(img, (1280-w)/2, (720-h)/2, w, h);
 }
 
-function selectItem(item){
- selected=item;
- $('textValue').value=item?.type==='text'?item.text:'';
- $('textColor').value=item?.type==='text'?item.color:'#ffffff';
- $('fontSize').value=item?.type==='text'?item.size:48;
-}
+function drawFallback() {
+  const grad = ctx.createLinearGradient(0, 0, 1280, 720);
+  grad.addColorStop(0, '#101322');
+  grad.addColorStop(0.55, '#29233d');
+  grad.addColorStop(1, '#10111b');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 1280, 720);
 
-function draw(showSelection=true){
- ctx.clearRect(0,0,1280,720);
+  const glow = ctx.createRadialGradient(850, 360, 30, 850, 360, 550);
+  glow.addColorStop(0, 'rgba(246,202,85,.18)');
+  glow.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, 1280, 720);
 
- if(background){
-  const s=Math.max(1280/background.width,720/background.height);
-  const w=background.width*s,h=background.height*s;
-  ctx.drawImage(background,(1280-w)/2,(720-h)/2,w,h);
- }else{
-  const g=ctx.createLinearGradient(0,0,1280,720);
-  g.addColorStop(0,'#21103d');
-  g.addColorStop(.5,'#101d42');
-  g.addColorStop(1,'#070916');
-  ctx.fillStyle=g;ctx.fillRect(0,0,1280,720);
-  const glow=ctx.createRadialGradient(900,250,20,900,250,500);
-  glow.addColorStop(0,'rgba(118,39,255,.35)');
-  glow.addColorStop(1,'transparent');
-  ctx.fillStyle=glow;ctx.fillRect(0,0,1280,720);
- }
- items.forEach(item=>{
-  if(item.type==='image'){
-   ctx.drawImage(item.img,item.x,item.y,item.w,item.h);
-  }else{
-   ctx.save();
-   ctx.font=`${item.bold?'bold ':''}${item.size}px ${item.font}`;
-   ctx.textAlign='left';
-   ctx.textBaseline='top';
-   ctx.fillStyle=item.color;
-   ctx.shadowColor='rgba(0,0,0,.65)';
-   ctx.shadowBlur=7;
-   const lines=item.text.split('\n');
-   lines.forEach((line,i)=>ctx.fillText(line,item.x,item.y+i*item.size*1.25));
-   ctx.restore();
+  ctx.strokeStyle = 'rgba(255,255,255,.07)';
+  ctx.lineWidth = 2;
+  for(let i=0;i<8;i++){
+    ctx.beginPath();
+    ctx.moveTo(550+i*100, 0);
+    ctx.lineTo(300+i*100, 720);
+    ctx.stroke();
   }
- });
-
- if(showSelection&&selected){
-  ctx.save();
-  ctx.strokeStyle='#58eaff';
-  ctx.lineWidth=3;
-  ctx.setLineDash([9,6]);
-  ctx.strokeRect(selected.x,selected.y,selected.w,selected.h);
-  ctx.setLineDash([]);
-  ctx.fillStyle='#58eaff';
-  ctx.fillRect(selected.x+selected.w-12,selected.y+selected.h-12,24,24);
-  ctx.restore();
- }
 }
 
-$('bgFile').addEventListener('change',e=>{
- const f=e.target.files[0];
- if(f)loadImage(f,img=>{background=img;draw()});
-});
+function drawHeadline() {
+  const name = el('player').value.trim() || 'PLAYER NAME';
+  const suffix = ' PLAYER REVIEW IS LIVE!';
+  const nameColor = el('highlightColor').value;
+  const restColor = el('headlineColor').value;
+  const requestedSize = Number(el('headlineSize').value);
+  const maxWidth = 1280 - layout.headline.x - 35;
 
-$('cardFile').addEventListener('change',e=>{
- [...e.target.files].forEach(file=>{
-  if(file.type.startsWith('image/'))loadImage(file,addImage);
- });
- e.target.value='';
-});
+  ctx.font = `900 ${requestedSize}px Arial Black, Arial, sans-serif`;
+  const totalWidth = ctx.measureText(name + suffix).width;
+  const size = Math.min(requestedSize,
+    requestedSize * maxWidth / Math.max(totalWidth, 1));
 
-$('addText').onclick=()=>{
- addText('YOUR PLAYER REVIEW IS LIVE!',100,80,48);
-};
+  ctx.font = `900 ${size}px Arial Black, Arial, sans-serif`;
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'left';
 
-$('delete').onclick=()=>{
- if(!selected)return;
- items=items.filter(i=>i!==selected);
- selectItem(null);draw();
-};
+  let x = layout.headline.x;
+  ctx.fillStyle = nameColor;
+  ctx.fillText(name, x, layout.headline.y);
+  x += ctx.measureText(name).width;
 
-$('textValue').addEventListener('input',e=>{
- if(!selected||selected.type!=='text')return;
- selected.text=e.target.value;
- draw();
-});
-
-$('textColor').addEventListener('input',e=>{
- if(!selected||selected.type!=='text')return;
- selected.color=e.target.value;draw();
-});
-
-$('fontSize').addEventListener('input',e=>{
- if(!selected||selected.type!=='text')return;
- selected.size=Number(e.target.value);
- selected.h=selected.size*1.35;
- draw();
-});
-
-function pointerPos(e){
- const r=canvas.getBoundingClientRect();
- return {
-  x:(e.clientX-r.left)*1280/r.width,
-  y:(e.clientY-r.top)*720/r.height
- };
+  ctx.fillStyle = restColor;
+  ctx.fillText(suffix, x, layout.headline.y);
 }
 
-canvas.addEventListener('pointerdown',e=>{
- const p=pointerPos(e);
- const hit=items.slice().reverse().find(i=>
-  p.x>=i.x&&p.x<=i.x+i.w&&p.y>=i.y&&p.y<=i.y+i.h
- );
- if(hit){
-  selectItem(hit);
-  resizing=p.x>hit.x+hit.w-28&&p.y>hit.y+hit.h-28;
-  dragging=!resizing;
-  start={x:p.x,y:p.y,itemX:hit.x,itemY:hit.y,w:hit.w,h:hit.h};
-  canvas.setPointerCapture(e.pointerId);
- }else{
-  selectItem(null);dragging=false;resizing=false;
- }
- draw();
-});
-
-canvas.addEventListener('pointermove',e=>{
- if(!selected||!start||(!dragging&&!resizing))return;
- const p=pointerPos(e);
- const dx=p.x-start.x,dy=p.y-start.y;
- if(dragging){
-  selected.x=Math.max(0,Math.min(1280-selected.w,start.itemX+dx));
-  selected.y=Math.max(0,Math.min(720-selected.h,start.itemY+dy));
- }else{
-  selected.w=Math.max(35,Math.min(1280-selected.x,start.w+dx));
-  selected.h=Math.max(35,Math.min(720-selected.y,start.h+dy));
- }
- draw();
-});
-
-function stopDrag(){
- dragging=false;resizing=false;start=null;
+function drawBy() {
+  const text = 'BY: ' + (el('creator').value.trim() || 'YOUR NAME');
+  const size = Number(el('bySize').value);
+  ctx.font = `900 ${size}px Arial Black, Arial, sans-serif`;
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'left';
+  ctx.fillStyle = el('byColor').value;
+  ctx.fillText(text, layout.by.x, layout.by.y);
 }
-canvas.addEventListener('pointerup',stopDrag);
-canvas.addEventListener('pointercancel',stopDrag);
 
-$('download').onclick=()=>{
- draw(false);
- const a=document.createElement('a');
- a.download='FC-Mobile-Player-Review.png';
- a.href=canvas.toDataURL('image/png');
- a.click();
- draw(true);
-};
+function draw() {
+  ctx.clearRect(0, 0, 1280, 720);
 
-$('clearBg').onclick=()=>{
- background=null;
- $('bgFile').value='';
- draw();
-};
+  if (bg) drawCover(bg);
+  else drawFallback();
 
-addText('XYZ PLAYER REVIEW IS LIVE!',570,440,43);
-addText('BY: XYZ',575,510,30);
+  // Draw the actual card image only. No card-shaped background or frame.
+  if (card) {
+    ctx.drawImage(card, layout.card.x, layout.card.y,
+                  layout.card.w, layout.card.h);
+  }
+
+  // All text is drawn directly over the background.
+  drawHeadline();
+  drawBy();
+}
+
+['player','creator','headlineColor','highlightColor','byColor',
+ 'headlineSize','cardSize','bySize'].forEach(id => {
+  el(id).addEventListener('input', () => {
+    if (id === 'cardSize' && card) {
+      const pct = Number(el('cardSize').value) / 42;
+      const ratio = card.width / card.height;
+      layout.card.h = Math.min(650, 570 * pct);
+      layout.card.w = layout.card.h * ratio;
+      if (layout.card.w > 480) {
+        layout.card.w = 480;
+        layout.card.h = layout.card.w / ratio;
+      }
+    }
+    draw();
+  });
+});
+
+function pointerPosition(e) {
+  const r = canvas.getBoundingClientRect();
+  return {
+    x: (e.clientX - r.left) * 1280 / r.width,
+    y: (e.clientY - r.top) * 720 / r.height
+  };
+}
+
+function hitTest(p) {
+  if (card && p.x >= layout.card.x && p.x <= layout.card.x+layout.card.w
+      && p.y >= layout.card.y && p.y <= layout.card.y+layout.card.h) {
+    return 'card';
+  }
+
+  if (Math.abs(p.y-layout.headline.y) < 75 &&
+      p.x >= layout.headline.x && p.x <= 1270) {
+    return 'headline';
+  }
+
+  if (Math.abs(p.y-layout.by.y) < 45 &&
+      p.x >= layout.by.x && p.x <= 1270) {
+    return 'by';
+  }
+
+  return null;
+}
+
+canvas.addEventListener('pointerdown', e => {
+  const p = pointerPosition(e);
+  dragging = hitTest(p);
+  lastPointer = p;
+  if (dragging) canvas.setPointerCapture(e.pointerId);
+});
+
+canvas.addEventListener('pointermove', e => {
+  if (!dragging || !lastPointer) return;
+  const p = pointerPosition(e);
+  const dx = p.x-lastPointer.x;
+  const dy = p.y-lastPointer.y;
+
+  if (dragging === 'card') {
+    layout.card.x = Math.max(0, Math.min(1280-layout.card.w,
+      layout.card.x+dx));
+    layout.card.y = Math.max(0, Math.min(720-layout.card.h,
+      layout.card.y+dy));
+  } else if (dragging === 'headline') {
+    layout.headline.x = Math.max(0, Math.min(950,
+      layout.headline.x+dx));
+    layout.headline.y = Math.max(40, Math.min(680,
+      layout.headline.y+dy));
+  } else if (dragging === 'by') {
+    layout.by.x = Math.max(0, Math.min(1100, layout.by.x+dx));
+    layout.by.y = Math.max(40, Math.min(680, layout.by.y+dy));
+  }
+
+  lastPointer = p;
+  draw();
+});
+
+function stopDrag() {
+  dragging = null;
+  lastPointer = null;
+}
+canvas.addEventListener('pointerup', stopDrag);
+canvas.addEventListener('pointercancel', stopDrag);
+
+el('reset').addEventListener('click', () => {
+  layout.card = {x:65,y:75,w:390,h:570};
+  layout.headline = {x:490,y:320};
+  layout.by = {x:495,y:390};
+  el('headlineSize').value = 66;
+  el('cardSize').value = 42;
+  el('bySize').value = 35;
+  fitCard();
+  draw();
+});
+
+el('download').addEventListener('click', () => {
+  draw();
+  canvas.toBlob(blob => {
+    if (!blob) {
+      alert('Export failed. Please try again.');
+      return;
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = (el('player').value.trim() || 'player')
+      .replace(/[^a-z0-9_-]/gi, '_') + '_review.png';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }, 'image/png');
+});
+
 draw();
 </script>
 </body>
