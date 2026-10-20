@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FC Mobile 27 Banner Generator</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#090b12;color:#fff;font-family:Arial,sans-serif;padding:18px}
+main{max-width:850px;margin:auto}
+h1{text-align:center;color:#e8c36b;font-size:25px}
+p{text-align:center;color:#b6b9c4}
+.preview{width:100%;border-radius:12px;border:1px solid #8b6b2d;display:block;background:#100e0a}
+.panel{margin-top:18px;padding:20px;background:#1b2434;border-radius:16px}
+label{display:block;margin:15px 0 7px;color:#c5cedd;font-weight:bold}
+input{width:100%;padding:13px;background:#0c1424;color:white;border:1px solid #46546a;border-radius:8px;font-size:16px}
+button{width:100%;padding:15px;margin-top:17px;border:0;border-radius:9px;background:#2563eb;color:white;font-size:17px;font-weight:bold}
+button.secondary{background:#303b50}
+.small{font-size:12px;color:#aab3c3}
+</style>
+</head>
+<body>
+<main>
+<h1>🏆 FC MOBILE 27</h1>
+<p>BALLON D'OR • PLAYER BANNER GENERATOR</p>
+
+<canvas id="banner" class="preview" width="1280" height="720"></canvas>
+
+<div class="panel">
+<label for="name">Player Name</label>
+<input id="name" value="CRISTIANO RONALDO" maxlength="40">
+
+<label for="stats">OVR | Position | Username</label>
+<input id="stats" value="122 | LW | YOUR USERNAME" maxlength="65">
+
+<label for="card">Upload Player Card Art</label>
+<input id="card" type="file" accept="image/*">
+<p class="small">Choose a card image from your phone. It stays on your device.</p>
+
+<button id="download">⬇ DOWNLOAD BANNER</button>
+<button class="secondary" id="reset">Reset Card Image</button>
+<p class="small">Created for the FC Mobile community. Customize and share your banner!</p>
+</div>
+</main>
+
+<script>
+const canvas=document.getElementById('banner');
+const ctx=canvas.getContext('2d');
+const nameInput=document.getElementById('name');
+const statsInput=document.getElementById('stats');
+const cardInput=document.getElementById('card');
+let card=null;
+
+function roundedRect(x,y,w,h,r){
+ ctx.beginPath();
+ ctx.roundRect(x,y,w,h,r);
+}
+
+function draw(){
+ const w=1280,h=720;
+ let bg=ctx.createLinearGradient(0,0,w,h);
+ bg.addColorStop(0,'#090a10');
+ bg.addColorStop(.48,'#29200e');
+ bg.addColorStop(1,'#05060b');
+ ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
+
+ // Cinematic golden light
+ for(let i=0;i<8;i++){
+  ctx.save();ctx.globalAlpha=.07;
+  ctx.fillStyle='#ffda78';
+  ctx.beginPath();
+  ctx.moveTo(650+i*95,0);
+  ctx.lineTo(690+i*95,0);
+  ctx.lineTo(500+i*95,720);
+  ctx.lineTo(465+i*95,720);
+  ctx.fill();ctx.restore();
+ }
+
+ // Gold particles
+ for(let i=0;i<150;i++){
+  let x=(i*197+31)%w,y=(i*113+47)%h;
+  ctx.globalAlpha=.2+((i%5)/8);
+  ctx.fillStyle='#ffd875';
+  ctx.beginPath();ctx.arc(x,y,i%3+1,0,Math.PI*2);ctx.fill();
+ }
+ ctx.globalAlpha=1;
+
+ // Left card area
+ let glow=ctx.createLinearGradient(45,50,565,650);
+ glow.addColorStop(0,'#e9c36d');
+ glow.addColorStop(.5,'#60451b');
+ glow.addColorStop(1,'#f8df96');
+ ctx.strokeStyle=glow;ctx.lineWidth=5;
+ roundedRect(48,48,490,624,22);ctx.stroke();
+
+ let inner=ctx.createLinearGradient(48,48,538,672);
+ inner.addColorStop(0,'#17130c');inner.addColorStop(1,'#080a10');
+ ctx.fillStyle=inner;
+ roundedRect(57,57,472,606,15);ctx.fill();
+
+ if(card){
+  let ratio=Math.min(440/card.width,570/card.height);
+  let cw=card.width*ratio,ch=card.height*ratio;
+  ctx.save();roundedRect(64,64,458,592,10);ctx.clip();
+  ctx.drawImage(card,64+(458-cw)/2,64+(592-ch)/2,cw,ch);
+  ctx.restore();
+ }else{
+  ctx.textAlign='center';
+  ctx.fillStyle='#e4c47b';
+  ctx.font='bold 30px Arial';
+  ctx.fillText('YOUR PLAYER CARD',293,325);
+  ctx.font='22px Arial';ctx.fillStyle='#b2a17b';
+  ctx.fillText('UPLOAD CARD ART BELOW',293,365);
+  ctx.strokeStyle='#81642d';ctx.lineWidth=2;
+  ctx.setLineDash([9,9]);
+  roundedRect(90,110,406,500,12);ctx.stroke();
+  ctx.setLineDash([]);
+ }
+
+ // Right-side branding
+ ctx.textAlign='center';
+ ctx.fillStyle='#e9c36d';
+ ctx.font='bold 30px Georgia';
+ ctx.fillText('✦  THE GOLDEN EDITION  ✦',900,112);
+
+ ctx.strokeStyle='#b28b3c';ctx.lineWidth=2;
+ ctx.beginPath();ctx.moveTo(625,145);ctx.lineTo(1190,145);ctx.stroke();
+
+ ctx.fillStyle='#f5d98f';
+ ctx.font='bold 68px Georgia';
+ ctx.fillText("BALLON D'OR",910,220);
+
+ ctx.fillStyle='#b68a35';
+ ctx.font='bold 31px Arial';
+ ctx.fillText('FC MOBILE 27',910,286);
+
+ ctx.strokeStyle='#9e792f';
+ ctx.beginPath();ctx.moveTo(665,320);ctx.lineTo(1155,320);ctx.stroke();
+
+ // Editable player name
+ let player=nameInput.value.trim()||'PLAYER NAME';
+ ctx.fillStyle='#fff0c3';
+ let fs=player.length>23?31:player.length>15?39:48;
+ ctx.font='bold '+fs+'px Arial';
+ ctx.fillText(player.toUpperCase(),910,405,530);
+
+ ctx.fillStyle='#d4b875';
+ ctx.font='bold 23px Arial';
+ ctx.fillText(statsInput.value.toUpperCase(),910,458,520);
+
+ ctx.fillStyle='#ffffff';
+ ctx.font='bold 31px Arial';
+ ctx.fillText('PLAYER REVIEW',910,545);
+
+ ctx.strokeStyle='#cba34e';ctx.lineWidth=2;
+ ctx.beginPath();ctx.moveTo(700,575);ctx.lineTo(1120,575);ctx.stroke();
+
+ ctx.fillStyle='#a99770';ctx.font='18px Arial';
+ ctx.fillText('YOUR CARD. YOUR LEGACY.',910,620);
+
+ ctx.fillStyle='#e9c36d';ctx.font='20px Arial';
+ ctx.fillText('★  FC MOBILE COMMUNITY  ★',910,665);
+}
+
+nameInput.addEventListener('input',draw);
+statsInput.addEventListener('input',draw);
+
+cardInput.addEventListener('change',()=>{
+ const file=cardInput.files[0];
+ if(!file)return;
+ if(!file.type.startsWith('image/')){
+  alert('Please select an image file.');return;
+ }
+ const reader=new FileReader();
+ reader.onload=()=>{
+  const img=new Image();
+  img.onload=()=>{card=img;draw()};
+  img.src=reader.result;
+ };
+ reader.readAsDataURL(file);
+});
+
+document.getElementById('reset').addEventListener('click',()=>{
+ card=null;cardInput.value='';draw();
+});
+
+document.getElementById('download').addEventListener('click',()=>{
+ const link=document.createElement('a');
+ link.download=(nameInput.value.trim()||'FC-Mobile-Banner')
+  .replace(/[^a-z0-9_-]+/gi,'-')+'.png';
+ link.href=canvas.toDataURL('image/png');
+ link.click();
+});
+
+draw();
+</script>
+</body>
+</html>
