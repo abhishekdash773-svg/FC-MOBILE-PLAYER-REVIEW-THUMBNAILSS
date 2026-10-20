@@ -147,12 +147,12 @@
 
     let cardImage = null;
 
-    // Exact full slot dimensions on the left side of the background template
+    // Optimized larger slot dimensions for the left frame
     const CARD_BOX = {
-      x: 35,
-      y: 210,
-      width: 240,
-      height: 440
+      x: 20,
+      y: 175,
+      width: 280,
+      height: 510
     };
 
     bgImage.onload = renderCanvas;
@@ -183,7 +183,7 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
 
-      // 3. Draw Card Art filling the left frame slot completely
+      // 3. Draw Card Art filling the larger left slot completely
       if (cardImage) {
         ctx.drawImage(cardImage, CARD_BOX.x, CARD_BOX.y, CARD_BOX.width, CARD_BOX.height);
       }
