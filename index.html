@@ -29,29 +29,13 @@
       padding: 20px;
     }
 
-    h2 {
-      color: var(--gold-primary);
-      margin-bottom: 15px;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      font-size: 1.4rem;
-    }
-
     .main-container {
       display: flex;
       flex-direction: column;
       gap: 20px;
-      max-width: 1300px;
+      max-width: 1280px;
       width: 100%;
       align-items: center;
-    }
-
-    @media (min-width: 1024px) {
-      .main-container {
-        flex-direction: row;
-        align-items: flex-start;
-        justify-content: center;
-      }
     }
 
     .canvas-container {
@@ -62,7 +46,7 @@
       overflow: hidden;
       background: #000;
       width: 100%;
-      max-width: 800px;
+      max-width: 1000px;
     }
 
     canvas {
@@ -70,11 +54,6 @@
       width: 100%;
       height: auto;
       aspect-ratio: 16 / 9;
-      cursor: grab;
-    }
-
-    canvas:active {
-      cursor: grabbing;
     }
 
     .controls-panel {
@@ -83,29 +62,11 @@
       border-radius: 8px;
       padding: 20px;
       width: 100%;
-      max-width: 400px;
+      max-width: 450px;
       backdrop-filter: blur(12px);
-    }
-
-    .section-title {
-      font-size: 0.95rem;
-      color: var(--gold-primary);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 10px;
-      border-bottom: 1px solid rgba(212, 175, 55, 0.3);
-      padding-bottom: 4px;
-    }
-
-    .form-group {
-      margin-bottom: 18px;
-    }
-
-    label {
-      display: block;
-      font-size: 0.85rem;
-      color: #aaa;
-      margin-bottom: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
     }
 
     input[type="file"] {
@@ -115,7 +76,7 @@
     .file-btn {
       display: block;
       width: 100%;
-      padding: 12px;
+      padding: 14px;
       background: linear-gradient(135deg, var(--gold-dark), var(--gold-primary));
       color: #000;
       font-weight: bold;
@@ -129,31 +90,6 @@
       opacity: 0.9;
     }
 
-    .slider-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 8px;
-    }
-
-    .slider-group label {
-      width: 60px;
-      margin-bottom: 0;
-      font-size: 0.8rem;
-    }
-
-    .slider-group input[type="range"] {
-      flex: 1;
-      accent-color: var(--gold-primary);
-    }
-
-    .slider-group span {
-      width: 45px;
-      font-size: 0.8rem;
-      text-align: right;
-      color: #ddd;
-    }
-
     .download-btn {
       width: 100%;
       padding: 14px;
@@ -165,7 +101,6 @@
       font-weight: bold;
       text-transform: uppercase;
       cursor: pointer;
-      margin-top: 10px;
       box-shadow: 0 4px 15px rgba(212, 175, 55, 0.35);
       transition: transform 0.1s;
     }
@@ -177,50 +112,18 @@
 </head>
 <body>
 
-  <h2>Thumbnail Generator</h2>
-
   <div class="main-container">
     <div class="canvas-container">
       <canvas id="thumbCanvas" width="1280" height="720"></canvas>
     </div>
 
     <div class="controls-panel">
-      
-      <!-- Background Upload -->
-      <div class="form-group">
-        <div class="section-title">1. Background Image</div>
-        <label for="bgImgInput" class="file-btn">Change Background Image</label>
-        <input type="file" id="bgImgInput" accept="image/*">
-      </div>
+      <!-- Upload Card Art -->
+      <label for="cardImgInput" class="file-btn">Upload Card Art (PNG)</label>
+      <input type="file" id="cardImgInput" accept="image/*">
 
-      <!-- Card Art Upload -->
-      <div class="form-group">
-        <div class="section-title">2. Card Art</div>
-        <label for="cardImgInput" class="file-btn">Upload Card Art (PNG)</label>
-        <input type="file" id="cardImgInput" accept="image/*">
-      </div>
-
-      <!-- Card Art Positioning Controls -->
-      <div class="form-group">
-        <div class="section-title">3. Card Position & Scale</div>
-        <div class="slider-group">
-          <label>Scale</label>
-          <input type="range" id="scaleInput" min="0.1" max="2.0" step="0.02" value="0.8">
-          <span id="scaleVal">0.8</span>
-        </div>
-        <div class="slider-group">
-          <label>X-Pos</label>
-          <input type="range" id="posXInput" min="-200" max="1000" value="80">
-          <span id="posXVal">80</span>
-        </div>
-        <div class="slider-group">
-          <label>Y-Pos</label>
-          <input type="range" id="posYInput" min="-200" max="800" value="180">
-          <span id="posYVal">180</span>
-        </div>
-      </div>
-
-      <button class="download-btn" id="downloadBtn">Download Thumbnail (1280x720)</button>
+      <!-- Download Button -->
+      <button class="download-btn" id="downloadBtn">Download Thumbnail</button>
     </div>
   </div>
 
@@ -228,36 +131,25 @@
     const canvas = document.getElementById('thumbCanvas');
     const ctx = canvas.getContext('2d');
 
-    // Default background loaded from repo
-    let bgImage = new Image();
+    // Fixed card position and dimensions matching the original spot
+    const CARD_POS = {
+      x: 27,       // Left position
+      y: 345,      // Top position
+      width: 228,  // Card width
+      height: 350  // Card height
+    };
+
+    // Load background image from repo
+    const bgImage = new Image();
     bgImage.src = 'background.jpg';
 
     let cardImage = null;
 
-    // Control Elements
-    const bgImgInput = document.getElementById('bgImgInput');
     const cardImgInput = document.getElementById('cardImgInput');
-    const scaleInput = document.getElementById('scaleInput');
-    const posXInput = document.getElementById('posXInput');
-    const posYInput = document.getElementById('posYInput');
 
     bgImage.onload = renderCanvas;
 
-    // Load custom background image
-    bgImgInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          bgImage = new Image();
-          bgImage.onload = renderCanvas;
-          bgImage.src = event.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    // Load custom Card Art image
+    // Handle Card PNG Upload
     cardImgInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file) {
@@ -271,21 +163,11 @@
       }
     });
 
-    // Handle Sliders
-    [scaleInput, posXInput, posYInput].forEach(input => {
-      input.addEventListener('input', () => {
-        document.getElementById('scaleVal').innerText = scaleInput.value;
-        document.getElementById('posXVal').innerText = posXInput.value;
-        document.getElementById('posYVal').innerText = posYInput.value;
-        renderCanvas();
-      });
-    });
-
     function renderCanvas() {
       // 1. Clear Canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // 2. Draw Background Image
+      // 2. Draw Background
       if (bgImage.complete && bgImage.naturalWidth !== 0) {
         ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
       } else {
@@ -293,22 +175,21 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
 
-      // 3. Draw Card Art Image
+      // 3. Draw Card Art locked strictly at fixed location
       if (cardImage) {
-        const scale = parseFloat(scaleInput.value);
-        const offsetX = parseInt(posXInput.value);
-        const offsetY = parseInt(posYInput.value);
-
-        const imgW = cardImage.width * scale;
-        const imgH = cardImage.height * scale;
-
-        ctx.drawImage(cardImage, offsetX, offsetY, imgW, imgH);
+        ctx.drawImage(
+          cardImage,
+          CARD_POS.x,
+          CARD_POS.y,
+          CARD_POS.width,
+          CARD_POS.height
+        );
       }
     }
 
     renderCanvas();
 
-    // Export Handler
+    // Export Thumbnail
     document.getElementById('downloadBtn').addEventListener('click', () => {
       const link = document.createElement('a');
       link.download = 'thumbnail.png';
