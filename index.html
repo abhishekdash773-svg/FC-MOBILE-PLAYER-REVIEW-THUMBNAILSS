@@ -1,250 +1,298 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Card Art Generator</title>
-  <style>
-    :root {
-      --gold-primary: #d4af37;
-      --gold-dark: #aa7c11;
-      --bg-dark: #0a0a0c;
-      --panel-bg: rgba(18, 18, 22, 0.85);
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FC Mobile Player Review Maker</title>
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&display=swap" rel="stylesheet">
 
-    body {
-      background-color: var(--bg-dark);
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    .main-container {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      max-width: 1200px;
-      width: 100%;
-      align-items: center;
-    }
-
-    @media (min-width: 900px) {
-      .main-container {
-        flex-direction: row;
-        align-items: flex-start;
-        justify-content: center;
-      }
-    }
-
-    .canvas-wrapper {
-      position: relative;
-      border: 2px solid var(--gold-dark);
-      border-radius: 8px;
-      box-shadow: 0 0 25px rgba(212, 175, 55, 0.3);
-      overflow: hidden;
-      background: #000;
-      max-width: 100%;
-    }
-
-    canvas {
-      display: block;
-      max-width: 100%;
-      height: auto;
-    }
-
-    .controls-panel {
-      background: var(--panel-bg);
-      border: 1px solid var(--gold-dark);
-      border-radius: 8px;
-      padding: 20px;
-      width: 100%;
-      max-width: 400px;
-      backdrop-filter: blur(10px);
-    }
-
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    label {
-      display: block;
-      font-size: 0.85rem;
-      color: #ccc;
-      margin-bottom: 5px;
-    }
-
-    input[type="file"] {
-      display: none;
-    }
-
-    .file-btn {
-      display: block;
-      width: 100%;
-      padding: 12px;
-      background: linear-gradient(135deg, var(--gold-dark), var(--gold-primary));
-      color: #000;
-      font-weight: bold;
-      text-align: center;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-
-    .file-btn:hover {
-      opacity: 0.9;
-    }
-
-    .slider-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 8px;
-    }
-
-    .slider-group input[type="range"] {
-      flex: 1;
-      accent-color: var(--gold-primary);
-    }
-
-    .slider-group span {
-      width: 40px;
-      font-size: 0.85rem;
-      text-align: right;
-    }
-
-    .download-btn {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, #ffd700, #b8860b);
-      border: none;
-      border-radius: 4px;
-      color: #000;
-      font-size: 1rem;
-      font-weight: bold;
-      text-transform: uppercase;
-      cursor: pointer;
-      margin-top: 15px;
-      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
-    }
-  </style>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;padding:16px;background:#101014;color:#fff;
+  font-family:Arial,sans-serif
+}
+h1{text-align:center;color:#e7bd62;font-size:23px}
+.subtitle{text-align:center;color:#bbb;font-size:13px}
+.wrap{max-width:850px;margin:18px auto}
+.preview{
+  padding:7px;background:#202020;border-radius:10px;
+}
+canvas{
+  width:100%;height:auto;display:block;aspect-ratio:16/9;
+  background:#171717;border-radius:4px
+}
+.panel{
+  margin-top:15px;padding:18px;background:#1b1b22;
+  border-radius:12px
+}
+label{display:block;margin:13px 0 7px;font-size:14px}
+input[type=text]{
+  width:100%;padding:12px;background:#101014;color:#fff;
+  border:1px solid #444;border-radius:7px;font-size:16px
+}
+input[type=file]{width:100%;font-size:13px}
+button{
+  width:100%;margin-top:18px;padding:14px;border:0;
+  border-radius:8px;background:#e7bd62;color:#16120a;
+  font-size:16px;font-weight:bold
+}
+.note{font-size:12px;line-height:1.6;color:#bbb}
+</style>
 </head>
 <body>
 
-  <div class="main-container">
-    <div class="canvas-wrapper">
-      <canvas id="cardCanvas" width="1280" height="720"></canvas>
-    </div>
+<h1>⚽ PLAYER REVIEW MAKER</h1>
+<p class="subtitle">FC MOBILE • BALLON D'OR EDITION</p>
 
-    <div class="controls-panel">
-      <!-- Player Image Upload -->
-      <div class="form-group">
-        <label for="playerImgInput" class="file-btn">Upload Player Image (PNG)</label>
-        <input type="file" id="playerImgInput" accept="image/*">
-      </div>
-
-      <!-- Player Controls -->
-      <div class="form-group">
-        <div class="slider-group">
-          <label>Scale</label>
-          <input type="range" id="scaleInput" min="0.2" max="2.5" step="0.05" value="1">
-          <span id="scaleVal">1.0</span>
-        </div>
-        <div class="slider-group">
-          <label>X-Pos</label>
-          <input type="range" id="posXInput" min="-300" max="500" value="0">
-          <span id="posXVal">0</span>
-        </div>
-        <div class="slider-group">
-          <label>Y-Pos</label>
-          <input type="range" id="posYInput" min="-300" max="500" value="0">
-          <span id="posYVal">0</span>
-        </div>
-      </div>
-
-      <button class="download-btn" id="downloadBtn">Download Image</button>
-    </div>
+<div class="wrap">
+  <div class="preview">
+    <canvas id="canvas" width="1280" height="720"></canvas>
   </div>
 
-  <script>
-    const canvas = document.getElementById('cardCanvas');
-    const ctx = canvas.getContext('2d');
+  <div class="panel">
+    <label for="player">Player Name</label>
+    <input id="player" type="text" value="ZIDANE" maxlength="28">
 
-    // Load background image from repo
-    const bgImage = new Image();
-    bgImage.src = 'background.jpg';
+    <label for="creator">Your Name (BY:)</label>
+    <input id="creator" type="text" value="YOUR NAME" maxlength="35">
 
-    let playerImage = null;
+    <label for="card">Upload Player Card (transparent PNG recommended)</label>
+    <input id="card" type="file" accept="image/png,image/webp,image/*">
 
-    // Control Elements
-    const playerImgInput = document.getElementById('playerImgInput');
-    const scaleInput = document.getElementById('scaleInput');
-    const posXInput = document.getElementById('posXInput');
-    const posYInput = document.getElementById('posYInput');
+    <button id="download">DOWNLOAD THUMBNAIL PNG</button>
 
-    bgImage.onload = renderCanvas;
+    <p class="note">
+      Fixed 16:9 layout • 1280 × 720 • No text or card boxes.
+      Background, font, layout and positions are fixed by the website owner.
+      Use a transparent PNG for the cleanest card result.
+    </p>
+  </div>
+</div>
 
-    playerImgInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          playerImage = new Image();
-          playerImage.onload = renderCanvas;
-          playerImage.src = event.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
-    [scaleInput, posXInput, posYInput].forEach(input => {
-      input.addEventListener('input', () => {
-        document.getElementById('scaleVal').innerText = scaleInput.value;
-        document.getElementById('posXVal').innerText = posXInput.value;
-        document.getElementById('posYVal').innerText = posYInput.value;
-        renderCanvas();
-      });
-    });
+const playerInput = document.getElementById("player");
+const creatorInput = document.getElementById("creator");
+const cardInput = document.getElementById("card");
 
-    function renderCanvas() {
-      // Draw Background
-      if (bgImage.complete && bgImage.naturalWidth !== 0) {
-        ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
-      } else {
-        ctx.fillStyle = '#0a0a0c';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      }
+let background = new Image();
+let backgroundReady = false;
+let playerCard = null;
 
-      // Draw Player Image (No text is rendered)
-      if (playerImage) {
-        const scale = parseFloat(scaleInput.value);
-        const offsetX = parseInt(posXInput.value);
-        const offsetY = parseInt(posYInput.value);
+// The website owner controls the background filename here.
+// Replace background.jpg in the repository to change the design.
+background.onload = () => {
+  backgroundReady = true;
+  draw();
+};
+background.onerror = () => {
+  backgroundReady = false;
+  draw();
+};
+background.src = "background.jpg";
 
-        const imgW = playerImage.width * scale;
-        const imgH = playerImage.height * scale;
+// Fixed layout: visitors cannot move or resize these elements.
+const CARD = { x: 65, y: 85, w: 365, h: 550 };
+const HEADLINE = { x: 475, y: 310, maxWidth: 770 };
+const CREDIT = { x: 480, y: 385, maxWidth: 730 };
 
-        ctx.drawImage(playerImage, offsetX, offsetY, imgW, imgH);
-      }
+function drawBackground() {
+  if (!backgroundReady) {
+    const g = ctx.createLinearGradient(0, 0, 1280, 720);
+    g.addColorStop(0, "#11111b");
+    g.addColorStop(0.5, "#302719");
+    g.addColorStop(1, "#09090e");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 1280, 720);
+
+    ctx.fillStyle = "#e7bd62";
+    ctx.font = "bold 32px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("UPLOAD background.jpg TO YOUR REPOSITORY", 640, 360);
+    return;
+  }
+
+  const scale = Math.max(
+    1280 / background.width,
+    720 / background.height
+  );
+  const w = background.width * scale;
+  const h = background.height * scale;
+
+  ctx.drawImage(
+    background,
+    (1280 - w) / 2,
+    (720 - h) / 2,
+    w,
+    h
+  );
+}
+
+function fitCard() {
+  if (!playerCard) return;
+
+  const scale = Math.min(
+    CARD.w / playerCard.width,
+    CARD.h / playerCard.height
+  );
+
+  const w = playerCard.width * scale;
+  const h = playerCard.height * scale;
+
+  // Center the uploaded card inside its fixed area.
+  ctx.drawImage(
+    playerCard,
+    CARD.x + (CARD.w - w) / 2,
+    CARD.y + (CARD.h - h) / 2,
+    w,
+    h
+  );
+}
+
+function fitFont(text, maxWidth, initialSize, minSize) {
+  let size = initialSize;
+
+  while (size > minSize) {
+    ctx.font = `900 ${size}px Cinzel, Georgia, serif`;
+    if (ctx.measureText(text).width <= maxWidth) break;
+    size--;
+  }
+
+  return size;
+}
+
+function drawHeadline() {
+  const name = playerInput.value.trim() || "PLAYER";
+  const suffix = " PLAYER REVIEW IS LIVE!";
+  const fullText = name + suffix;
+
+  const size = fitFont(fullText, HEADLINE.maxWidth, 43, 12);
+
+  ctx.font = `900 ${size}px Cinzel, Georgia, serif`;
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+
+  // Same font, size and weight across the entire headline.
+  const gradient = ctx.createLinearGradient(
+    HEADLINE.x, HEADLINE.y - size / 2,
+    HEADLINE.x, HEADLINE.y + size / 2
+  );
+  gradient.addColorStop(0, "#fff0b3");
+  gradient.addColorStop(0.35, "#e8c56f");
+  gradient.addColorStop(0.7, "#bd8732");
+  gradient.addColorStop(1, "#fff0b3");
+
+  ctx.fillStyle = gradient;
+  ctx.shadowColor = "rgba(0,0,0,0.85)";
+  ctx.shadowBlur = 8;
+  ctx.shadowOffsetX = 2;
+  ctx.shadowOffsetY = 3;
+
+  // A single line; font shrinks if the name is long.
+  ctx.fillText(fullText, HEADLINE.x, HEADLINE.y, HEADLINE.maxWidth);
+
+  ctx.shadowColor = "transparent";
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 0;
+}
+
+function drawCredit() {
+  const text = "BY: " + (creatorInput.value.trim() || "YOUR NAME");
+  const size = fitFont(text, CREDIT.maxWidth, 27, 12);
+
+  ctx.font = `900 ${size}px Cinzel, Georgia, serif`;
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+
+  const gradient = ctx.createLinearGradient(
+    CREDIT.x, CREDIT.y - size / 2,
+    CREDIT.x, CREDIT.y + size / 2
+  );
+  gradient.addColorStop(0, "#ffffff");
+  gradient.addColorStop(1, "#d6b56b");
+
+  ctx.fillStyle = gradient;
+  ctx.shadowColor = "rgba(0,0,0,0.9)";
+  ctx.shadowBlur = 6;
+  ctx.shadowOffsetY = 2;
+
+  ctx.fillText(text, CREDIT.x, CREDIT.y, CREDIT.maxWidth);
+
+  ctx.shadowColor = "transparent";
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
+}
+
+function draw() {
+  ctx.clearRect(0, 0, 1280, 720);
+  drawBackground();
+
+  // No panel, rectangle or frame behind the card.
+  if (playerCard) fitCard();
+
+  // Text is drawn directly on top of the background.
+  drawHeadline();
+  drawCredit();
+}
+
+playerInput.addEventListener("input", draw);
+creatorInput.addEventListener("input", draw);
+
+cardInput.addEventListener("change", event => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+
+  img.onload = () => {
+    playerCard = img;
+    draw();
+    URL.revokeObjectURL(url);
+  };
+
+  img.onerror = () => {
+    URL.revokeObjectURL(url);
+    alert("Image could not be loaded. Try another PNG.");
+  };
+
+  img.src = url;
+});
+
+document.getElementById("download").addEventListener("click", async () => {
+  await document.fonts.ready;
+  draw();
+
+  canvas.toBlob(blob => {
+    if (!blob) {
+      alert("Could not export the thumbnail. Please try again.");
+      return;
     }
 
-    renderCanvas();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
 
-    document.getElementById('downloadBtn').addEventListener('click', () => {
-      const link = document.createElement('a');
-      link.download = 'card-image.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    });
-  </script>
+    const safeName = (playerInput.value.trim() || "PLAYER")
+      .replace(/[^a-z0-9_-]/gi, "_");
+
+    link.href = url;
+    link.download = safeName + "_PLAYER_REVIEW.png";
+    link.click();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }, "image/png");
+});
+
+document.fonts.ready.then(draw);
+draw();
+</script>
 </body>
 </html>
