@@ -186,6 +186,14 @@
 
     let cardImage = null;
 
+    // Left card placement slot parameters
+    const SLOT = {
+      x: 10,
+      y: 190,
+      width: 250,
+      height: 480
+    };
+
     // Control Elements
     const nameInput = document.getElementById('playerNameInput');
     const infoInput = document.getElementById('playerInfoInput');
@@ -219,64 +227,73 @@
       if (bgImage.complete && bgImage.naturalWidth !== 0) {
         ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
       } else {
-        // Fallback banner background color matching the purple in the preview
-        ctx.fillStyle = '#6b21a8';
+        ctx.fillStyle = '#0a0a0c';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
 
+      // Calculate exact card render box
+      let renderX = SLOT.x;
+      let renderY = SLOT.y;
+      let renderW = SLOT.width;
+      let renderH = SLOT.height;
+
       // 3. Draw Player Card PNG (Left side slot)
       if (cardImage) {
-        const cardX = 60;
-        const cardY = 160;
-        const cardWidth = 320;
-        const cardHeight = 440;
+        const scale = Math.min(SLOT.width / cardImage.width, SLOT.height / cardImage.height);
+        renderW = cardImage.width * scale;
+        renderH = cardImage.height * scale;
 
-        const scale = Math.min(cardWidth / cardImage.width, cardHeight / cardImage.height);
-        const renderW = cardImage.width * scale;
-        const renderH = cardImage.height * scale;
-
-        const renderX = cardX + (cardWidth - renderW) / 2;
-        const renderY = cardY + (cardHeight - renderH) / 2;
+        renderX = SLOT.x + (SLOT.width - renderW) / 2;
+        renderY = SLOT.y + (SLOT.height - renderH) / 2;
 
         ctx.drawImage(cardImage, renderX, renderY, renderW, renderH);
       }
 
-      // 4. Render Player Name
-      const textLeftMargin = 120;
-      const textTopMargin = 380;
+      // Card Center alignment X position
+      const cardCenterX = renderX + (renderW / 2);
 
+      // 4. Render Player Name inside lower portion of card
       ctx.save();
       ctx.fillStyle = '#ffffff';
-      ctx.font = '900 52px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'left';
+      ctx.font = '900 32px system-ui, -apple-system, sans-serif';
+      ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      const upperName = nameInput.value.toUpperCase();
-      ctx.fillText(upperName, textLeftMargin, textTopMargin);
+      
+      // Add subtle text shadow for clear visibility against any background
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+      ctx.shadowBlur = 8;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 2;
 
-      // 5. Render Info / Stats Badge
+      const upperName = nameInput.value.toUpperCase();
+      const nameY = renderY + renderH - 85;
+      ctx.fillText(upperName, cardCenterX, nameY);
+
+      // 5. Render Info / Stats Badge centered right below the name inside the card
       if (infoInput.value.trim() !== '') {
         const infoText = infoInput.value.toUpperCase();
-        ctx.font = '700 22px system-ui, -apple-system, sans-serif';
+        ctx.font = '700 13px system-ui, -apple-system, sans-serif';
         const textMetrics = ctx.measureText(infoText);
         
-        const badgePaddingX = 14;
-        const badgePaddingY = 8;
-        const badgeX = textLeftMargin;
-        const badgeY = textTopMargin + 38;
+        const badgePaddingX = 10;
+        const badgePaddingY = 5;
         const badgeWidth = textMetrics.width + (badgePaddingX * 2);
-        const badgeHeight = 36;
+        const badgeHeight = 24;
+        const badgeX = cardCenterX - (badgeWidth / 2);
+        const badgeY = nameY + 22;
 
         // Draw green badge box
+        ctx.shadowColor = 'transparent'; // clear shadow for box fill
         ctx.fillStyle = '#15803d';
         ctx.beginPath();
-        ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, 6);
+        ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, 5);
         ctx.fill();
 
-        // Draw badge text
+        // Draw badge text inside box
         ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(infoText, badgeX + (badgeWidth / 2), badgeY + (badgeHeight / 2));
+        ctx.fillText(infoText, cardCenterX, badgeY + (badgeHeight / 2));
       }
 
       ctx.restore();
