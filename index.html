@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Player Review Banner Generator</title>
+  <title>Thumbnail Generator</title>
   <style>
     :root {
       --bg-dark: #0b0e14;
@@ -77,22 +77,6 @@
       font-weight: 500;
     }
 
-    input[type="text"] {
-      width: 100%;
-      padding: 14px 16px;
-      background: var(--input-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      color: #fff;
-      font-size: 1rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    input[type="text"]:focus {
-      border-color: var(--blue-accent);
-    }
-
     .file-input-wrapper {
       position: relative;
       background: var(--input-bg);
@@ -132,7 +116,7 @@
       font-weight: 600;
       cursor: pointer;
       transition: background-color 0.2s, transform 0.1s;
-      margin-top: 10px;
+      margin-top: 5px;
     }
 
     .download-btn:hover {
@@ -148,36 +132,24 @@
 
   <div class="main-container">
     <div class="canvas-container">
-      <canvas id="bannerCanvas" width="1280" height="720"></canvas>
+      <canvas id="thumbCanvas" width="1280" height="720"></canvas>
     </div>
 
     <div class="controls-panel">
-      <!-- Player Name -->
+      <!-- Card Art Upload -->
       <div class="form-group">
-        <label for="playerNameInput">Player Name:</label>
-        <input type="text" id="playerNameInput" value="LAYUN">
-      </div>
-
-      <!-- Info / Stats -->
-      <div class="form-group">
-        <label for="playerInfoInput">Info / Stats:</label>
-        <input type="text" id="playerInfoInput" value="120 | RB | MADHAV">
-      </div>
-
-      <!-- Player Card Image Upload -->
-      <div class="form-group">
-        <label for="cardImgInput">Player Card Image:</label>
+        <label for="cardImgInput">Player Card Image (PNG):</label>
         <div class="file-input-wrapper">
           <input type="file" id="cardImgInput" accept="image/*">
         </div>
       </div>
 
-      <button class="download-btn" id="downloadBtn">Download Banner</button>
+      <button class="download-btn" id="downloadBtn">Download Thumbnail</button>
     </div>
   </div>
 
   <script>
-    const canvas = document.getElementById('bannerCanvas');
+    const canvas = document.getElementById('thumbCanvas');
     const ctx = canvas.getContext('2d');
 
     // Locked Background from repository
@@ -186,23 +158,18 @@
 
     let cardImage = null;
 
-    // Left card placement slot parameters
+    // Left card slot dimensions
     const SLOT = {
-      x: 10,
-      y: 190,
-      width: 250,
-      height: 480
+      x: 15,
+      y: 110,
+      width: 500,
+      height: 500
     };
-
-    // Control Elements
-    const nameInput = document.getElementById('playerNameInput');
-    const infoInput = document.getElementById('playerInfoInput');
-    const cardImgInput = document.getElementById('cardImgInput');
 
     bgImage.onload = renderCanvas;
 
-    // Handle custom Card Art upload
-    cardImgInput.addEventListener('change', (e) => {
+    // Custom Card Art upload handler
+    document.getElementById('cardImgInput').addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
@@ -214,10 +181,6 @@
         reader.readAsDataURL(file);
       }
     });
-
-    // Event listeners for text inputs
-    nameInput.addEventListener('input', renderCanvas);
-    infoInput.addEventListener('input', renderCanvas);
 
     function renderCanvas() {
       // 1. Clear Canvas
@@ -231,72 +194,21 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
 
-      // Calculate exact card render box
-      let renderX = SLOT.x;
-      let renderY = SLOT.y;
-      let renderW = SLOT.width;
-      let renderH = SLOT.height;
-
-      // 3. Draw Player Card PNG (Left side slot)
+      // 3. Draw Card Art proportionally centered inside the slot (Zero text overlays)
       if (cardImage) {
-        const scale = Math.min(SLOT.width / cardImage.width, SLOT.height / cardImage.height);
-        renderW = cardImage.width * scale;
-        renderH = cardImage.height * scale;
+        const scale = Math.min(
+          SLOT.width / cardImage.width,
+          SLOT.height / cardImage.height
+        );
 
-        renderX = SLOT.x + (SLOT.width - renderW) / 2;
-        renderY = SLOT.y + (SLOT.height - renderH) / 2;
+        const renderWidth = cardImage.width * scale;
+        const renderHeight = cardImage.height * scale;
 
-        ctx.drawImage(cardImage, renderX, renderY, renderW, renderH);
+        const renderX = SLOT.x + (SLOT.width - renderWidth) / 2;
+        const renderY = SLOT.y + (SLOT.height - renderHeight) / 2;
+
+        ctx.drawImage(cardImage, renderX, renderY, renderWidth, renderHeight);
       }
-
-      // Card Center alignment X position
-      const cardCenterX = renderX + (renderW / 2);
-
-      // 4. Render Player Name inside lower portion of card
-      ctx.save();
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '900 32px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      
-      // Add subtle text shadow for clear visibility against any background
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-      ctx.shadowBlur = 8;
-      ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 2;
-
-      const upperName = nameInput.value.toUpperCase();
-      const nameY = renderY + renderH - 85;
-      ctx.fillText(upperName, cardCenterX, nameY);
-
-      // 5. Render Info / Stats Badge centered right below the name inside the card
-      if (infoInput.value.trim() !== '') {
-        const infoText = infoInput.value.toUpperCase();
-        ctx.font = '700 13px system-ui, -apple-system, sans-serif';
-        const textMetrics = ctx.measureText(infoText);
-        
-        const badgePaddingX = 10;
-        const badgePaddingY = 5;
-        const badgeWidth = textMetrics.width + (badgePaddingX * 2);
-        const badgeHeight = 24;
-        const badgeX = cardCenterX - (badgeWidth / 2);
-        const badgeY = nameY + 22;
-
-        // Draw green badge box
-        ctx.shadowColor = 'transparent'; // clear shadow for box fill
-        ctx.fillStyle = '#15803d';
-        ctx.beginPath();
-        ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, 5);
-        ctx.fill();
-
-        // Draw badge text inside box
-        ctx.fillStyle = '#ffffff';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(infoText, cardCenterX, badgeY + (badgeHeight / 2));
-      }
-
-      ctx.restore();
     }
 
     renderCanvas();
@@ -304,7 +216,7 @@
     // Download handler
     document.getElementById('downloadBtn').addEventListener('click', () => {
       const link = document.createElement('a');
-      link.download = 'player-review-banner.png';
+      link.download = 'thumbnail.png';
       link.href = canvas.toDataURL('image/png', 1.0);
       link.click();
     });
